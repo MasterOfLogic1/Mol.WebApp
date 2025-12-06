@@ -1,0 +1,132 @@
+.blog-post {
+  width: 100%;
+  min-height: calc(100vh - 200px);
+  padding: 2rem;
+}
+
+.blog-post-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.back-btn {
+  background-color: transparent;
+  color: #4A00C8;
+  border: 2px solid #4A00C8;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background-color: #4A00C8;
+  color: #ffffff;
+}
+
+.blog-post-content {
+  background: #ffffff;
+  padding: 3rem;
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.blog-post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.blog-post-category {
+  background-color: #4A00C8;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.blog-post-read-time {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.blog-post-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
+}
+
+.blog-post-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.blog-post-author {
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.blog-post-date {
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.blog-post-body {
+  color: #4a5568;
+  line-height: 1.8;
+  font-size: 1.125rem;
+}
+
+.blog-post-body h2 {
+  color: #1a1a1a;
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin: 2rem 0 1rem 0;
+}
+
+.blog-post-body p {
+  margin: 1rem 0;
+}
+
+.blog-post-body ul {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.blog-post-body li {
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .blog-post {
+    padding: 1rem;
+  }
+
+  .blog-post-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .blog-post-title {
+    font-size: 2rem;
+  }
+
+  .blog-post-body {
+    font-size: 1rem;
+  }
+
+  .blog-post-body h2 {
+    font-size: 1.5rem;
+  }
+}
+

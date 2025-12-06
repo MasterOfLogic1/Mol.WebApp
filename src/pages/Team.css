@@ -1,0 +1,179 @@
+.team {
+  width: 100%;
+  min-height: calc(100vh - 200px);
+}
+
+.team-hero {
+  background: linear-gradient(135deg, #6b34ca 0%, #4A00C8 100%);
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.team-hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.team-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+}
+
+.team-subtitle {
+  font-size: 1.25rem;
+  color: #ffffff;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.team-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 3rem;
+  justify-items: center;
+}
+
+.team-card {
+  background: #ffffff;
+  border-radius: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-width: 320px;
+  width: 100%;
+}
+
+.team-card-image-wrapper {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.team-card-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+}
+
+.team-image-placeholder {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #9ca3af;
+}
+
+.team-card-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.team-card-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.team-card-role {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4A00C8;
+  margin: 0;
+}
+
+.team-card-bio {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.team-card-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.team-link {
+  color: #4A00C8;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: color 0.3s ease;
+}
+
+.team-link:hover {
+  color: #3A00A0;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .team-title {
+    font-size: 2rem;
+  }
+
+  .team-subtitle {
+    font-size: 1rem;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .team-container {
+    padding: 2rem 1rem;
+  }
+
+  .team-card {
+    max-width: 100%;
+  }
+
+  .team-card-image-wrapper {
+    height: 250px;
+  }
+}
+
+.team-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+}
+
+.team-loading p {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.team-error,
+.team-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.125rem;
+  color: #6b7280;
+}
+
+.team-error {
+  color: #ef4444;
+}
+
