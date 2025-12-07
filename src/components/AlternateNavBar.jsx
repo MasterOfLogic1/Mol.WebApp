@@ -1,15 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './AlternateNavBar.css';
-import navbarIcon from '../assets/navbar-icon.jpg';
 
 function AlternateNavBar() {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <nav className="alternate-nav">
       <div className="alternate-nav-container">
-        <Link to="/" className="alternate-nav-logo">
-          <img src={navbarIcon} alt="Master of Logic" className="alternate-nav-logo-img" />
-        </Link>
+        <button onClick={handleBack} className="alternate-nav-back" aria-label="Go back">
+          <span className="back-icon">‹</span>
+        </button>
       </div>
     </nav>
   );

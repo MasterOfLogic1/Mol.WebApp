@@ -1,10 +1,11 @@
 .alternate-nav {
   width: 100%;
   padding: 1rem 2rem;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
+  background-color: transparent;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
 }
 
@@ -12,19 +13,30 @@
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
 }
 
-.alternate-nav-logo {
+.alternate-nav-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
   display: flex;
   align-items: center;
-  text-decoration: none;
+  justify-content: center;
+  color: #1a1a1a;
+  font-size: 2rem;
+  line-height: 1;
+  transition: color 0.3s ease;
 }
 
-.alternate-nav-logo-img {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
+.alternate-nav-back:hover {
+  color: #4A00C8;
+}
+
+.back-icon {
+  font-weight: bold;
+  display: inline-block;
 }
 

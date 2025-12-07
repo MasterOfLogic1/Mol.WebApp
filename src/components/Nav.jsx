@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Nav.css';
 import navbarIcon from '../assets/navbar-icon.jpg';
 
 function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -12,6 +15,15 @@ function Nav() {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const handleToolsClick = () => {
+    closeMenu();
+    if (isAuthenticated()) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
@@ -34,7 +46,9 @@ function Nav() {
           <Link to="/blog" className="nav-link" onClick={closeMenu}>Blog</Link>
           <Link to="/team" className="nav-link" onClick={closeMenu}>Team</Link>
           <Link to="/contact" className="nav-link" onClick={closeMenu}>Contact</Link>
-          <button className="nav-membership-btn">Tools & Resources</button>
+          <button className="nav-membership-btn" onClick={handleToolsClick}>
+            Tools & Resources
+          </button>
         </div>
       </div>
     </nav>
