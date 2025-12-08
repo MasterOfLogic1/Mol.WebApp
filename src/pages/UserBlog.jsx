@@ -119,6 +119,12 @@ function UserBlog() {
                     )}
                   </div>
                   <p className="user-profile-username">@{userProfile.username}</p>
+                  {(userProfile.occupation || userProfile.profile?.occupation) && (
+                    <p className="user-profile-occupation">{userProfile.occupation || userProfile.profile?.occupation}</p>
+                  )}
+                  {(userProfile.bio || userProfile.profile?.bio) && (
+                    <p className="user-profile-bio">{userProfile.bio || userProfile.profile?.bio}</p>
+                  )}
                   <div className="user-profile-meta">
                     <span className="user-role-badge">{userProfile.role_name}</span>
                     <span className="user-joined-date">Joined {formatDate(userProfile.date_joined)}</span>

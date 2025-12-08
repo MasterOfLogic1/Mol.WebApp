@@ -20,7 +20,7 @@ function Nav() {
   const handleToolsClick = () => {
     closeMenu();
     if (isAuthenticated()) {
-      navigate('/dashboard');
+      navigate('/apps');
     } else {
       navigate('/login');
     }
@@ -43,7 +43,7 @@ function Nav() {
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" className="nav-link" onClick={closeMenu}>Home</Link>
           <Link to="/courses" className="nav-link" onClick={closeMenu}>Courses</Link>
-          <Link to="/blog" className="nav-link" onClick={closeMenu}>Blog</Link>
+          <Link to="/blog" className="nav-link" onClick={closeMenu}>Journals</Link>
           <Link to="/team" className="nav-link" onClick={closeMenu}>Team</Link>
           <Link to="/contact" className="nav-link" onClick={closeMenu}>Contact</Link>
           <button className="nav-membership-btn" onClick={handleToolsClick}>

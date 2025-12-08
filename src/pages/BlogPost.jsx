@@ -56,7 +56,7 @@ function BlogPost() {
       <div className="blog-post">
         <div className="blog-post-container">
           <button onClick={() => navigate('/blog')} className="back-btn">
-            ← Back to Blog
+            ← Back
           </button>
           <div className="blog-post-error">
             <h1>Post Not Found</h1>
@@ -72,7 +72,7 @@ function BlogPost() {
     <div className="blog-post">
       <div className="blog-post-container">
         <button onClick={() => navigate('/blog')} className="back-btn">
-          ← Back to Blog
+          ← Back
         </button>
         
         <article className="blog-post-content">

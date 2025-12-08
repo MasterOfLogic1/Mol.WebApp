@@ -31,7 +31,7 @@ function Login() {
     try {
       const result = await login(formData.email, formData.password);
       if (result.success) {
-        navigate('/dashboard');
+        navigate('/apps');
       } else {
         setError(result.error || 'Login failed. Please check your credentials.');
       }

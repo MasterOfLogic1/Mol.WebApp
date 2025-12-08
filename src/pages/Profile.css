@@ -119,6 +119,25 @@
 .form-group input:focus {
   outline: none;
   border-color: #4A00C8;
+  box-shadow: 0 0 0 3px rgba(74, 0, 200, 0.1);
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4A00C8;
+  box-shadow: 0 0 0 3px rgba(74, 0, 200, 0.1);
 }
 
 .thumbnail-upload-section {

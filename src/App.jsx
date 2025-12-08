@@ -18,6 +18,7 @@ import Verification from './pages/Verification';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import NotFound from './pages/NotFound';
 import './App.css';
 
 // Protected Route Component
@@ -44,7 +45,7 @@ function AdminRoute({ children }) {
   }
 
   if (!isAdmin()) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/apps" replace />;
   }
 
   return children;
@@ -55,7 +56,7 @@ function AppRoutes() {
   const pathname = location.pathname;
   const authRoutes = ['/register', '/login', '/reset-password'];
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/register/verification/');
-  const isDashboardRoute = pathname.startsWith('/dashboard');
+  const isDashboardRoute = pathname.startsWith('/apps');
 
   return (
     <div className="App">
@@ -76,13 +77,14 @@ function AppRoutes() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route
-          path="/dashboard/*"
+          path="/apps/*"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
         </Routes>
       {!isAuthRoute && !isDashboardRoute && <Footer />}
     </div>

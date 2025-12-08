@@ -18,7 +18,7 @@ function Admin() {
         <div className="admin-card">
           <h3>User Management</h3>
           <p>Manage users, roles, and permissions</p>
-          <button className="admin-card-btn" onClick={() => navigate('/dashboard/admin/manage-users')}>
+          <button className="admin-card-btn" onClick={() => navigate('/apps/admin/manage-users')}>
             Manage Users
           </button>
         </div>
@@ -26,7 +26,7 @@ function Admin() {
         <div className="admin-card">
           <h3>Content Management</h3>
           <p>Manage courses, blog posts, and other content</p>
-          <button className="admin-card-btn" onClick={() => navigate('/dashboard/admin/manage-content')}>
+          <button className="admin-card-btn" onClick={() => navigate('/apps/admin/manage-content')}>
             Manage Content
           </button>
         </div>
@@ -34,7 +34,7 @@ function Admin() {
         <div className="admin-card">
           <h3>Analytics</h3>
           <p>View site analytics and statistics</p>
-          <button className="admin-card-btn" onClick={() => navigate('/dashboard/admin/analytics')}>
+          <button className="admin-card-btn" onClick={() => navigate('/apps/admin/analytics')}>
             View Analytics
           </button>
         </div>

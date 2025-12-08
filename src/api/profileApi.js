@@ -42,6 +42,8 @@ export const getUserProfile = async () => {
  * @param {string} profileData.lastname - Last name (required)
  * @param {string} [profileData.middlename] - Middle name (optional)
  * @param {string} [profileData.phonenumber] - Phone number (optional)
+ * @param {string} [profileData.occupation] - Occupation (optional)
+ * @param {string} [profileData.bio] - Bio (optional)
  * @param {File} [profileData.thumbnail] - Profile picture file (optional)
  * @returns {Promise<Object>} Created profile data.
  */
@@ -56,6 +58,14 @@ export const createUserProfile = async (profileData) => {
   
   if (profileData.phonenumber) {
     formData.append('phonenumber', profileData.phonenumber);
+  }
+  
+  if (profileData.occupation) {
+    formData.append('occupation', profileData.occupation);
+  }
+  
+  if (profileData.bio) {
+    formData.append('bio', profileData.bio);
   }
   
   if (profileData.thumbnail) {
@@ -91,6 +101,8 @@ export const createUserProfile = async (profileData) => {
  * @param {string} profileData.lastname - Last name (required)
  * @param {string} [profileData.middlename] - Middle name (optional)
  * @param {string} [profileData.phonenumber] - Phone number (optional)
+ * @param {string} [profileData.occupation] - Occupation (optional)
+ * @param {string} [profileData.bio] - Bio (optional)
  * @param {File} [profileData.thumbnail] - Profile picture file (optional)
  * @returns {Promise<Object>} Updated profile data.
  */
@@ -105,6 +117,14 @@ export const updateUserProfile = async (profileData) => {
   
   if (profileData.phonenumber !== undefined) {
     formData.append('phonenumber', profileData.phonenumber || '');
+  }
+  
+  if (profileData.occupation !== undefined) {
+    formData.append('occupation', profileData.occupation || '');
+  }
+  
+  if (profileData.bio !== undefined) {
+    formData.append('bio', profileData.bio || '');
   }
   
   if (profileData.thumbnail) {

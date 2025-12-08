@@ -12,6 +12,8 @@ function Profile() {
     lastname: '',
     middlename: '',
     phonenumber: '',
+    occupation: '',
+    bio: '',
     thumbnail: null,
   });
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -37,6 +39,8 @@ function Profile() {
         lastname: data.lastname || '',
         middlename: data.middlename || '',
         phonenumber: data.phonenumber || '',
+        occupation: data.occupation || '',
+        bio: data.bio || '',
         thumbnail: null,
       });
       setThumbnailPreview(data.thumbnail_url || null);
@@ -244,6 +248,30 @@ function Profile() {
                 name="phonenumber"
                 value={formData.phonenumber}
                 onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="occupation">Occupation</label>
+              <input
+                type="text"
+                id="occupation"
+                name="occupation"
+                value={formData.occupation}
+                onChange={handleInputChange}
+                placeholder="e.g., Software Engineer, Designer, Writer"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="bio">Bio</label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={handleInputChange}
+                rows="4"
+                placeholder="Tell us about yourself..."
               />
             </div>
 

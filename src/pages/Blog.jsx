@@ -54,9 +54,9 @@ function Blog() {
     <div className="blog">
       <div className="blog-hero">
         <div className="blog-hero-content">
-          <h1 className="blog-title">Our Blog</h1>
+          <h1 className="blog-title">Masters Journal</h1>
           <p className="blog-subtitle">
-            Insights, tutorials, and updates on software engineering, AI, and automation
+            Read articles and journals from experts in fields of interest
           </p>
         </div>
       </div>

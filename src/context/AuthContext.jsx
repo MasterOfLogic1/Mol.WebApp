@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
             id: decoded.user_id,
             email: decoded.email,
             role: decoded.role,
+            username: decoded.username,
           });
         } else {
           // Token expired, remove it
@@ -56,6 +57,7 @@ export const AuthProvider = ({ children }) => {
           id: decoded.user_id,
           email: decoded.email,
           role: decoded.role,
+          username: decoded.username,
         });
         return { success: true };
       }
@@ -79,6 +81,10 @@ export const AuthProvider = ({ children }) => {
     return user?.role === 'admin';
   };
 
+  const isWriter = () => {
+    return user?.role === 'writer';
+  };
+
   const getAuthToken = () => {
     return token;
   };
@@ -91,6 +97,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated,
     isAdmin,
+    isWriter,
     getAuthToken,
   };
 

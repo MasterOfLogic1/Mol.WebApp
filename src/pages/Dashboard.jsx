@@ -6,10 +6,11 @@ import ManageContent from './ManageContent';
 import Analytics from './Analytics';
 import ManageUsers from './ManageUsers';
 import Profile from './Profile';
+import Journal from './Journal';
 import './Dashboard.css';
 
 function Dashboard() {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isWriter } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
@@ -37,23 +38,32 @@ function Dashboard() {
           </div>
           <nav className="dashboard-nav">
             <Link
-              to="/dashboard"
-              className={`dashboard-nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
+              to="/apps"
+              className={`dashboard-nav-link ${location.pathname === '/apps' ? 'active' : ''}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <Link
-              to="/dashboard/profile"
-              className={`dashboard-nav-link ${location.pathname === '/dashboard/profile' ? 'active' : ''}`}
+              to="/apps/profile"
+              className={`dashboard-nav-link ${location.pathname === '/apps/profile' ? 'active' : ''}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Profile
             </Link>
+            {isWriter() && (
+              <Link
+                to="/apps/journal"
+                className={`dashboard-nav-link ${location.pathname === '/apps/journal' ? 'active' : ''}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Journal
+              </Link>
+            )}
             {isAdmin() && (
               <Link
-                to="/dashboard/admin"
-                className={`dashboard-nav-link ${location.pathname === '/dashboard/admin' ? 'active' : ''}`}
+                to="/apps/admin"
+                className={`dashboard-nav-link ${location.pathname === '/apps/admin' ? 'active' : ''}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Admin
@@ -80,15 +90,17 @@ function Dashboard() {
           </div>
 
           <div className="dashboard-content">
-            {location.pathname === '/dashboard/profile' ? (
+            {location.pathname === '/apps/profile' ? (
               <Profile />
-            ) : location.pathname === '/dashboard/admin/manage-users' && isAdmin() ? (
+            ) : location.pathname === '/apps/journal' && isWriter() ? (
+              <Journal />
+            ) : location.pathname === '/apps/admin/manage-users' && isAdmin() ? (
               <ManageUsers />
-            ) : location.pathname === '/dashboard/admin/analytics' && isAdmin() ? (
+            ) : location.pathname === '/apps/admin/analytics' && isAdmin() ? (
               <Analytics />
-            ) : location.pathname === '/dashboard/admin/manage-content' && isAdmin() ? (
+            ) : location.pathname === '/apps/admin/manage-content' && isAdmin() ? (
               <ManageContent />
-            ) : location.pathname === '/dashboard/admin' && isAdmin() ? (
+            ) : location.pathname === '/apps/admin' && isAdmin() ? (
               <Admin />
             ) : (
               <DashboardHome />
