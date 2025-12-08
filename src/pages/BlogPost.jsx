@@ -4,7 +4,7 @@ import { getBlogPost } from '../api/blogsApi';
 import './BlogPost.css';
 
 function BlogPost() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,13 +12,13 @@ function BlogPost() {
 
   useEffect(() => {
     fetchPost();
-  }, [id]);
+  }, [slug]);
 
   const fetchPost = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getBlogPost(id);
+      const data = await getBlogPost(slug);
       setPost(data);
     } catch (err) {
       setError(err.message || 'Failed to load blog post');

@@ -8,6 +8,7 @@ import './Register.css';
 function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
     firstname: '',
@@ -71,6 +72,18 @@ function Register() {
         <div className="register-form-wrapper">
           <form className="register-form" onSubmit={handleSubmit}>
             {error && <div className="register-error">{error}</div>}
+
+            <div className="form-group">
+              <label htmlFor="username">Username *</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
             <div className="form-group">
               <label htmlFor="email">Email *</label>

@@ -36,8 +36,8 @@ function Blog() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleReadMore = (postId) => {
-    navigate(`/blog/${postId}`);
+  const handleReadMore = (post) => {
+    navigate(`/blog/${post.slug || post.id}`);
   };
 
   const formatDate = (dateString) => {
@@ -98,7 +98,7 @@ function Blog() {
                       </div>
                       <button 
                         className="blog-read-btn"
-                        onClick={() => handleReadMore(post.id)}
+                        onClick={() => handleReadMore(post)}
                       >
                         Read More →
                       </button>

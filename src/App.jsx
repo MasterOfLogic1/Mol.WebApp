@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Courses from './pages/Courses';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
+import UserBlog from './pages/UserBlog';
 import Contact from './pages/Contact';
 import Team from './pages/Team';
 import Register from './pages/Register';
@@ -63,7 +64,8 @@ function AppRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:id" element={<BlogPost />} />
+          <Route path="/blog/user/:username" element={<UserBlog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/team" element={<Team />} />
         <Route path="/register" element={<Register />} />

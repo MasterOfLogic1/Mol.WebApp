@@ -3,6 +3,8 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Admin from './Admin';
 import ManageContent from './ManageContent';
+import Analytics from './Analytics';
+import ManageUsers from './ManageUsers';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -70,7 +72,11 @@ function Dashboard() {
           </div>
 
           <div className="dashboard-content">
-            {location.pathname === '/dashboard/admin/manage-content' && isAdmin() ? (
+            {location.pathname === '/dashboard/admin/manage-users' && isAdmin() ? (
+              <ManageUsers />
+            ) : location.pathname === '/dashboard/admin/analytics' && isAdmin() ? (
+              <Analytics />
+            ) : location.pathname === '/dashboard/admin/manage-content' && isAdmin() ? (
               <ManageContent />
             ) : location.pathname === '/dashboard/admin' && isAdmin() ? (
               <Admin />

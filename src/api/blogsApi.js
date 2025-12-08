@@ -153,14 +153,20 @@ export const deleteBlogPost = async (postId) => {
  * @param {Object} params - Query parameters
  * @param {number} params.page - Page number (default: 1)
  * @param {number} params.page_size - Items per page (default: 10)
+ * @param {string} params.username - Filter posts by username (optional)
  * @returns {Promise<Object>} Response with blog posts
  */
 export const getBlogPosts = async (params = {}) => {
-  const { page = 1, page_size = 10 } = params;
+  const { page = 1, page_size = 10, username } = params;
   const queryParams = new URLSearchParams({
     page: page.toString(),
     page_size: page_size.toString(),
   });
+
+  // Add username to query params if provided
+  if (username) {
+    queryParams.append('username', username);
+  }
 
   const response = await fetch(`${API_BASE_URL}/blog/?${queryParams}`, {
     method: 'GET',
@@ -178,12 +184,12 @@ export const getBlogPosts = async (params = {}) => {
 };
 
 /**
- * Get a single blog post by ID (if endpoint exists)
- * @param {number} postId - Blog post ID
+ * Get a single blog post by slug or ID
+ * @param {string|number} slugOrId - Blog post slug or ID
  * @returns {Promise<Object>} Blog post data
  */
-export const getBlogPost = async (postId) => {
-  const response = await fetch(`${API_BASE_URL}/blog/${postId}/`, {
+export const getBlogPost = async (slugOrId) => {
+  const response = await fetch(`${API_BASE_URL}/blog/${slugOrId}/`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -193,6 +199,28 @@ export const getBlogPost = async (postId) => {
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Failed to fetch blog post' }));
     throw new Error(error.message || error.detail || 'Failed to fetch blog post');
+  }
+
+  return await response.json();
+};
+
+/**
+ * Fetches user profile by username.
+ * Public access.
+ * @param {string} username - The username to fetch profile for.
+ * @returns {Promise<Object>} User profile data.
+ */
+export const getUserProfile = async (username) => {
+  const response = await fetch(`${API_BASE_URL}/user-profile/user/${username}/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'Failed to fetch user profile' }));
+    throw new Error(error.message || error.detail || 'Failed to fetch user profile');
   }
 
   return await response.json();

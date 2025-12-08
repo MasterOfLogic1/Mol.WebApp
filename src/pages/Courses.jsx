@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Courses.css';
-import { API_BASE_URL } from '../config/api';
+import { getCourses } from '../api/courseApi';
 
 function Courses() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,26 +11,18 @@ function Courses() {
   const coursesPerPage = 4;
 
   useEffect(() => {
-    fetchCourses(currentPage);
+    fetchCourses();
   }, [currentPage]);
 
-  const fetchCourses = async (page) => {
+  const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `${API_BASE_URL}/course/?page=${page}&page_size=${coursesPerPage}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch courses');
-      }
-      
-      const data = await response.json();
+      setError(null);
+      const data = await getCourses({ page: currentPage, page_size: coursesPerPage });
       setCourses(data.results || []);
       setTotalPages(data.total_pages || 1);
-      setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to fetch courses');
       setCourses([]);
     } finally {
       setLoading(false);
