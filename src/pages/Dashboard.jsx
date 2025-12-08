@@ -5,6 +5,7 @@ import Admin from './Admin';
 import ManageContent from './ManageContent';
 import Analytics from './Analytics';
 import ManageUsers from './ManageUsers';
+import Profile from './Profile';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -42,6 +43,13 @@ function Dashboard() {
             >
               Home
             </Link>
+            <Link
+              to="/dashboard/profile"
+              className={`dashboard-nav-link ${location.pathname === '/dashboard/profile' ? 'active' : ''}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Profile
+            </Link>
             {isAdmin() && (
               <Link
                 to="/dashboard/admin"
@@ -72,7 +80,9 @@ function Dashboard() {
           </div>
 
           <div className="dashboard-content">
-            {location.pathname === '/dashboard/admin/manage-users' && isAdmin() ? (
+            {location.pathname === '/dashboard/profile' ? (
+              <Profile />
+            ) : location.pathname === '/dashboard/admin/manage-users' && isAdmin() ? (
               <ManageUsers />
             ) : location.pathname === '/dashboard/admin/analytics' && isAdmin() ? (
               <Analytics />

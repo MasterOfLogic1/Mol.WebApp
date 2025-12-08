@@ -96,14 +96,20 @@ function UserBlog() {
             <div className="user-profile-content">
               <div className="user-profile-main">
                 <div className="user-profile-avatar">
-                  <div className="user-avatar-placeholder">
-                    {getUserFullName()
-                      .split(' ')
-                      .map(n => n[0])
-                      .join('')
-                      .toUpperCase()
-                      .slice(0, 2)}
-                  </div>
+                  {(userProfile.profile?.thumbnail_url || userProfile.thumbnail_url) ? (
+                    <div className="user-avatar-image">
+                      <img src={userProfile.profile?.thumbnail_url || userProfile.thumbnail_url} alt={getUserFullName()} />
+                    </div>
+                  ) : (
+                    <div className="user-avatar-placeholder">
+                      {getUserFullName()
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2)}
+                    </div>
+                  )}
                 </div>
                 <div className="user-profile-details">
                   <div className="user-profile-name-section">
