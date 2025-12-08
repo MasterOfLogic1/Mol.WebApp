@@ -79,8 +79,8 @@ function UserBlog() {
         <div className="user-blog-error">
           <h1>User Not Found</h1>
           <p>{error || 'The user you are looking for does not exist.'}</p>
-          <button onClick={() => navigate('/blog')} className="back-btn">
-            Back to Blog
+          <button onClick={() => navigate('/journals')} className="back-btn">
+            Back to Journals
           </button>
         </div>
       </div>

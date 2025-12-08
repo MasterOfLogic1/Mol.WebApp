@@ -6,7 +6,7 @@ import ManageContent from './ManageContent';
 import Analytics from './Analytics';
 import ManageUsers from './ManageUsers';
 import Profile from './Profile';
-import Journal from './Journal';
+import ManageJournal from './ManageJournal';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -93,7 +93,7 @@ function Dashboard() {
             {location.pathname === '/apps/profile' ? (
               <Profile />
             ) : location.pathname === '/apps/journal' && isWriter() ? (
-              <Journal />
+              <ManageJournal />
             ) : location.pathname === '/apps/admin/manage-users' && isAdmin() ? (
               <ManageUsers />
             ) : location.pathname === '/apps/admin/analytics' && isAdmin() ? (

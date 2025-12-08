@@ -6,8 +6,8 @@ import Footer from './components/Footer';
 import FloatingSocialPanel from './components/FloatingSocialPanel';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
-import Blog from './pages/Blog';
-import BlogPost from './pages/BlogPost';
+import Journal from './pages/Journal';
+import JournalPost from './pages/JournalPost';
 import UserBlog from './pages/UserBlog';
 import UserBlogPost from './pages/UserBlogPost';
 import Contact from './pages/Contact';
@@ -65,10 +65,10 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
-          <Route path="/blog" element={<Blog />} />
+          <Route path="/journals" element={<Journal />} />
+          <Route path="/journals/:slug" element={<JournalPost />} />
           <Route path="/blog/user/:username" element={<UserBlog />} />
           <Route path="/blog/user/:username/:slug" element={<UserBlogPost />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/team" element={<Team />} />
         <Route path="/register" element={<Register />} />

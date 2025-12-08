@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBlogPost } from '../api/blogsApi';
-import './BlogPost.css';
+import './JournalPost.css';
 
 function UserBlogPost() {
   const { username, slug } = useParams();

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBlogPost } from '../api/blogsApi';
-import './BlogPost.css';
+import './JournalPost.css';
 
-function BlogPost() {
+function JournalPost() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
@@ -55,8 +55,8 @@ function BlogPost() {
     return (
       <div className="blog-post">
         <div className="blog-post-container">
-          <button onClick={() => navigate('/blog')} className="back-btn">
-            ← Back
+          <button onClick={() => navigate('/journals')} className="back-btn">
+            ← Back to Journals
           </button>
           <div className="blog-post-error">
             <h1>Post Not Found</h1>
@@ -71,8 +71,8 @@ function BlogPost() {
   return (
     <div className="blog-post">
       <div className="blog-post-container">
-        <button onClick={() => navigate('/blog')} className="back-btn">
-          ← Back
+        <button onClick={() => navigate('/journals')} className="back-btn">
+          ← Back to Journals
         </button>
         
         <article className="blog-post-content">
@@ -133,5 +133,5 @@ function BlogPost() {
   );
 }
 
-export default BlogPost;
+export default JournalPost;
 
