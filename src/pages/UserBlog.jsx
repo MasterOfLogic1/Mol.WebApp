@@ -158,7 +158,7 @@ function UserBlog() {
                       <span className="user-blog-card-date">{formatDate(post.date_uploaded)}</span>
                       <button 
                         className="user-blog-read-btn"
-                        onClick={() => navigate(`/blog/${post.slug || post.id}`)}
+                        onClick={() => navigate(`/blog/user/${username}/${post.slug || post.id}`)}
                       >
                         Read More →
                       </button>
