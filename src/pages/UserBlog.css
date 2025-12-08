@@ -3,92 +3,126 @@
   min-height: calc(100vh - 200px);
 }
 
-.user-blog-hero {
-  background: linear-gradient(135deg, #6b34ca 0%, #4A00C8 100%);
-  padding: 4rem 2rem;
+.user-profile-section {
+  background-color: #f5f5f5;
+  padding: 0;
 }
 
-.user-blog-hero-content {
-  max-width: 1200px;
-  margin: 0 auto;
+.user-profile-container {
+  width: 100%;
 }
 
 .user-profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 2rem;
+  background-color: #ffffff;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
 }
 
-.user-profile-info {
+.user-profile-cover {
+  height: 120px;
+  background: linear-gradient(135deg, #6b34ca 0%, #4A00C8 100%);
+  position: relative;
+}
+
+.user-profile-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  margin-top: -50px;
+  position: relative;
+}
+
+.user-profile-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.user-profile-avatar {
+  flex-shrink: 0;
+}
+
+.user-avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b34ca 0%, #4A00C8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: bold;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.user-profile-details {
   flex: 1;
-  min-width: 300px;
+  padding-top: 50px;
+}
+
+.user-profile-name-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .user-profile-name {
-  font-size: 3rem;
-  font-weight: bold;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.user-verified-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #0a66c2;
   color: #ffffff;
-  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: bold;
+  flex-shrink: 0;
 }
 
 .user-profile-username {
-  font-size: 1.5rem;
-  color: #ffffff;
-  opacity: 0.9;
-  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #666;
+  margin: 0 0 0.75rem 0;
 }
 
 .user-profile-meta {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.75rem;
   flex-wrap: wrap;
+  margin-top: 0.25rem;
 }
 
 .user-role-badge {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 0.375rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8125rem;
   font-weight: 600;
   text-transform: capitalize;
 }
 
-.user-verified-badge {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+.user-joined-date {
+  color: #666;
   font-size: 0.875rem;
-  font-weight: 600;
 }
 
-.user-profile-stats {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-}
-
-.stat-label {
+.user-post-count {
+  color: #666;
   font-size: 0.875rem;
-  color: #ffffff;
-  opacity: 0.9;
 }
 
 .user-blog-container {
@@ -317,12 +351,54 @@
 }
 
 @media (max-width: 768px) {
+  .user-profile-header {
+    margin: 0;
+  }
+
+  .user-profile-cover {
+    height: 100px;
+  }
+
+  .user-profile-content {
+    padding: 0 1rem 1rem 1rem;
+    margin-top: -40px;
+  }
+
+  .user-profile-main {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .user-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    font-size: 1.5rem;
+    border-width: 2px;
+  }
+
+  .user-profile-details {
+    padding-top: 0;
+    width: 100%;
+  }
+
+  .user-profile-name-section {
+    justify-content: center;
+  }
+
   .user-profile-name {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
   .user-profile-username {
-    font-size: 1.25rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .user-profile-meta {
+    justify-content: center;
   }
 
   .user-blog-grid {
@@ -351,16 +427,6 @@
 
   .user-blog-card-right {
     width: 100%;
-  }
-
-  .user-profile-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .user-profile-stats {
-    width: 100%;
-    justify-content: space-around;
   }
 
   .pagination {

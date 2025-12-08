@@ -89,29 +89,36 @@ function UserBlog() {
 
   return (
     <div className="user-blog">
-      <div className="user-blog-hero">
-        <div className="user-blog-hero-content">
+      <div className="user-profile-section">
+        <div className="user-profile-container">
           <div className="user-profile-header">
-            <div className="user-profile-info">
-              <h1 className="user-profile-name">{getUserFullName()}</h1>
-              <p className="user-profile-username">@{userProfile.username}</p>
-              {userProfile.profile && (
-                <div className="user-profile-meta">
-                  <span className="user-role-badge">{userProfile.role_name}</span>
-                  {userProfile.is_verified && (
-                    <span className="user-verified-badge">✓ Verified</span>
-                  )}
+            <div className="user-profile-cover"></div>
+            <div className="user-profile-content">
+              <div className="user-profile-main">
+                <div className="user-profile-avatar">
+                  <div className="user-avatar-placeholder">
+                    {getUserFullName()
+                      .split(' ')
+                      .map(n => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2)}
+                  </div>
                 </div>
-              )}
-            </div>
-            <div className="user-profile-stats">
-              <div className="stat-item">
-                <span className="stat-value">{posts.length}</span>
-                <span className="stat-label">Posts</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-value">{formatDate(userProfile.date_joined)}</span>
-                <span className="stat-label">Joined</span>
+                <div className="user-profile-details">
+                  <div className="user-profile-name-section">
+                    <h1 className="user-profile-name">{getUserFullName()}</h1>
+                    {userProfile.is_verified && (
+                      <span className="user-verified-icon" title="Verified">✓</span>
+                    )}
+                  </div>
+                  <p className="user-profile-username">@{userProfile.username}</p>
+                  <div className="user-profile-meta">
+                    <span className="user-role-badge">{userProfile.role_name}</span>
+                    <span className="user-joined-date">Joined {formatDate(userProfile.date_joined)}</span>
+                    <span className="user-post-count">{posts.length} {posts.length === 1 ? 'Post' : 'Posts'}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
