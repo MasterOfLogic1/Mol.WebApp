@@ -95,7 +95,16 @@ function UserBlogPost() {
           <h1 className="blog-post-title">{post.title}</h1>
           
           <div className="blog-post-meta">
-            <span className="blog-post-author">By {post.creator_fullname || 'Master of Logic'}</span>
+            <div className="blog-post-author-section">
+              {post.creator_thumbnail_url && (
+                <img 
+                  src={post.creator_thumbnail_url} 
+                  alt={post.creator_fullname || 'Author'} 
+                  className="blog-post-author-avatar"
+                />
+              )}
+              <span className="blog-post-author">By {post.creator_fullname || 'Master of Logic'}</span>
+            </div>
             <span className="blog-post-date">{formatDate(post.date_uploaded)}</span>
           </div>
           
