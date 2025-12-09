@@ -1,0 +1,40 @@
+name: Deploy React App to Hostinger
+
+on:
+  push:
+    branches:
+      - main  # Adjust if your default branch is different
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out your repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Node.js (using Node 18 to support the Web Crypto API)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 4: Build your React app
+      - name: Build React App
+        run: npm run build
+
+      # Step 5: Deploy the build folder via FTP to Hostinger
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: 'ftps'  # Use 'ftp' if FTPS is not available
+          local-dir: dist/      # The folder created by the build process
+          server-dir: /public_html/  # Adjust this to the correct folder on your server
