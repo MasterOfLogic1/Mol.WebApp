@@ -50,15 +50,15 @@ export const AuthProvider = ({ children }) => {
       const { accessToken } = response;
       
       if (accessToken) {
-        const decoded = jwtDecode(accessToken);
+      const decoded = jwtDecode(accessToken);
         localStorage.setItem('accessToken', accessToken);
-        setToken(accessToken);
-        setUser({
-          id: decoded.user_id,
-          email: decoded.email,
+      setToken(accessToken);
+      setUser({
+        id: decoded.user_id,
+        email: decoded.email,
           role: decoded.role,
           username: decoded.username,
-        });
+      });
         return { success: true };
       }
       throw new Error('No access token received');
@@ -90,13 +90,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const value = {
-    user,
-    token,
-    loading,
-    login,
-    logout,
+      user,
+      token,
+      loading,
+      login,
+      logout,
     isAuthenticated,
-    isAdmin,
+      isAdmin,
     isWriter,
     getAuthToken,
   };

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getBlogPosts } from '../api/blogsApi';
 import noBlogPic from '../assets/no-blog-pic.png';
+import OfflineEmptyState from '../components/OfflineEmptyState';
 import './Journal.css';
+
+const CACHE_KEY = 'journal_posts_cache';
+const CACHE_TIMESTAMP_KEY = 'journal_posts_cache_timestamp';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 function Journal() {
   const navigate = useNavigate();
@@ -11,11 +16,71 @@ function Journal() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
+  const [isOffline, setIsOffline] = useState(false);
   const postsPerPage = 4;
 
   useEffect(() => {
+    // Load cached data on mount
+    loadCachedPosts();
     fetchPosts();
   }, [currentPage]);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOffline(false);
+      // Try to fetch fresh data when coming back online
+      if (posts.length === 0) {
+        fetchPosts();
+      }
+    };
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Check initial status
+    setIsOffline(!navigator.onLine);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [posts.length]);
+
+  const loadCachedPosts = () => {
+    try {
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+      
+      if (cachedData && cacheTimestamp) {
+        const age = Date.now() - parseInt(cacheTimestamp, 10);
+        if (age < CACHE_DURATION) {
+          const parsed = JSON.parse(cachedData);
+          // Load cached data for current page if available
+          const cachedPage = parsed[currentPage];
+          if (cachedPage) {
+            setPosts(cachedPage.results || []);
+            setTotalPages(cachedPage.total_pages || 1);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error loading cached posts:', err);
+    }
+  };
+
+  const saveToCache = (page, data) => {
+    try {
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const cache = cachedData ? JSON.parse(cachedData) : {};
+      cache[page] = data;
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+    } catch (err) {
+      console.error('Error saving to cache:', err);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -24,9 +89,32 @@ function Journal() {
       const response = await getBlogPosts({ page: currentPage, page_size: postsPerPage });
       setPosts(response.results || []);
       setTotalPages(response.total_pages || 1);
+      setIsOffline(false);
+      
+      // Save to cache on successful fetch
+      saveToCache(currentPage, {
+        results: response.results || [],
+        total_pages: response.total_pages || 1,
+      });
     } catch (err) {
-      setError(err.message || 'Failed to load blog posts');
-      setPosts([]);
+      // Check if it's a network error
+      const isNetworkError = !navigator.onLine || 
+                            err.message.includes('Failed to fetch') ||
+                            err.message.includes('NetworkError') ||
+                            err.message.includes('network');
+      
+      if (isNetworkError) {
+        setIsOffline(true);
+        // Try to load from cache
+        loadCachedPosts();
+        // Only show error if no cached data available
+        if (posts.length === 0) {
+          setError('No internet connection. Please check your network and try again.');
+        }
+      } else {
+        setError(err.message || 'Failed to load blog posts');
+        setPosts([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -62,13 +150,21 @@ function Journal() {
         </div>
       </div>
 
+      {isOffline && posts.length > 0 && (
+        <div className="offline-notice">
+          <span className="offline-icon">●</span>
+          <span>You might be offline</span>
+        </div>
+      )}
       <div className="blog-container">
-        {loading ? (
+        {loading && !isOffline ? (
           <div className="blog-loading">
             <div className="spinner"></div>
             <p>Loading blog posts...</p>
           </div>
-        ) : error ? (
+        ) : isOffline && posts.length === 0 ? (
+          <OfflineEmptyState onRetry={fetchPosts} />
+        ) : error && posts.length === 0 ? (
           <div className="blog-error">
             <p>Error: {error}</p>
             <button onClick={fetchPosts} className="retry-btn">Try Again</button>

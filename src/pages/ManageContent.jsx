@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from '../api/blogsApi';
 import { getCourses, createCourse, updateCourse, deleteCourse } from '../api/courseApi';
+import { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember } from '../api/teamApi';
 import './ManageContent.css';
 
 function ManageContent() {
@@ -27,6 +28,7 @@ function ManageContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [isBlogCollapsed, setIsBlogCollapsed] = useState(false);
   const [isCourseCollapsed, setIsCourseCollapsed] = useState(true);
+  const [isTeamCollapsed, setIsTeamCollapsed] = useState(true);
   
   // Course state
   const [courses, setCourses] = useState([]);
@@ -44,6 +46,23 @@ function ManageContent() {
   const [courseCurrentPage, setCourseCurrentPage] = useState(1);
   const [courseTotalPages, setCourseTotalPages] = useState(1);
 
+  // Team state
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [teamLoading, setTeamLoading] = useState(true);
+  const [teamError, setTeamError] = useState('');
+  const [showTeamForm, setShowTeamForm] = useState(false);
+  const [editingTeamMember, setEditingTeamMember] = useState(null);
+  const [teamFormData, setTeamFormData] = useState({
+    full_name: '',
+    occupation: '',
+    bio: '',
+    avatar_url: '',
+    email_url: '',
+    linkedin_url: '',
+  });
+  const [teamCurrentPage, setTeamCurrentPage] = useState(1);
+  const [teamTotalPages, setTeamTotalPages] = useState(1);
+
   useEffect(() => {
     fetchPosts();
   }, [currentPage]);
@@ -53,6 +72,12 @@ function ManageContent() {
       fetchCourses();
     }
   }, [courseCurrentPage, isCourseCollapsed]);
+
+  useEffect(() => {
+    if (!isTeamCollapsed) {
+      fetchTeamMembers();
+    }
+  }, [teamCurrentPage, isTeamCollapsed]);
 
   const fetchPosts = async () => {
     try {
@@ -282,6 +307,92 @@ function ManageContent() {
     setShowCourseForm(false);
     setEditingCourse(null);
     resetCourseForm();
+  };
+
+  // Team functions
+  const fetchTeamMembers = async () => {
+    try {
+      setTeamLoading(true);
+      const response = await getTeamMembers({ page: teamCurrentPage, page_size: 10 });
+      setTeamMembers(response.results || []);
+      setTeamTotalPages(response.total_pages || 1);
+      setTeamError('');
+    } catch (err) {
+      setTeamError(err.message || 'Failed to fetch team members');
+      setTeamMembers([]);
+    } finally {
+      setTeamLoading(false);
+    }
+  };
+
+  const handleTeamInputChange = (e) => {
+    const { name, value } = e.target;
+    setTeamFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleTeamSubmit = async (e) => {
+    e.preventDefault();
+    setTeamError('');
+
+    try {
+      if (editingTeamMember) {
+        await updateTeamMember(editingTeamMember.id, teamFormData);
+      } else {
+        await createTeamMember(teamFormData);
+      }
+      setShowTeamForm(false);
+      setEditingTeamMember(null);
+      resetTeamForm();
+      fetchTeamMembers();
+    } catch (err) {
+      setTeamError(err.message || 'Failed to save team member');
+    }
+  };
+
+  const handleTeamEdit = (member) => {
+    setEditingTeamMember(member);
+    setTeamFormData({
+      full_name: member.full_name || '',
+      occupation: member.occupation || '',
+      bio: member.bio || '',
+      avatar_url: member.avatar_url || '',
+      email_url: member.email_url || '',
+      linkedin_url: member.linkedin_url || '',
+    });
+    setShowTeamForm(true);
+  };
+
+  const handleTeamDelete = async (memberId) => {
+    if (!window.confirm('Are you sure you want to delete this team member?')) {
+      return;
+    }
+
+    try {
+      await deleteTeamMember(memberId);
+      fetchTeamMembers();
+    } catch (err) {
+      setTeamError(err.message || 'Failed to delete team member');
+    }
+  };
+
+  const resetTeamForm = () => {
+    setTeamFormData({
+      full_name: '',
+      occupation: '',
+      bio: '',
+      avatar_url: '',
+      email_url: '',
+      linkedin_url: '',
+    });
+  };
+
+  const handleTeamCancel = () => {
+    setShowTeamForm(false);
+    setEditingTeamMember(null);
+    resetTeamForm();
   };
 
   return (
@@ -756,6 +867,224 @@ function ManageContent() {
                       <button
                         onClick={() => setCourseCurrentPage(prev => Math.min(courseTotalPages, prev + 1))}
                         disabled={courseCurrentPage === courseTotalPages}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Team Section */}
+      <div className="manage-content-section">
+        <div className="manage-content-section-header" onClick={() => setIsTeamCollapsed(!isTeamCollapsed)}>
+          <div className="manage-content-section-title">
+            <h2>Team</h2>
+            <span className="collapse-icon">{isTeamCollapsed ? '▼' : '▲'}</span>
+          </div>
+          {!isTeamCollapsed && (
+            <button 
+              className="manage-content-btn" 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setShowTeamForm(true);
+                resetTeamForm();
+              }}
+            >
+              Create
+            </button>
+          )}
+        </div>
+
+        {!isTeamCollapsed && (
+          <>
+            {teamError && <div className="manage-content-error">{teamError}</div>}
+
+            {showTeamForm && (
+              <div className="manage-content-form-wrapper">
+                <form className="manage-content-form" onSubmit={handleTeamSubmit}>
+                  <div className="form-header">
+                    <h3>{editingTeamMember ? 'Edit Team Member' : 'Create New Team Member'}</h3>
+                    <button type="button" onClick={handleTeamCancel} className="form-close-btn">×</button>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="team-full_name">Full Name *</label>
+                    <input
+                      type="text"
+                      id="team-full_name"
+                      name="full_name"
+                      value={teamFormData.full_name}
+                      onChange={handleTeamInputChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="team-occupation">Occupation</label>
+                    <input
+                      type="text"
+                      id="team-occupation"
+                      name="occupation"
+                      value={teamFormData.occupation}
+                      onChange={handleTeamInputChange}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="team-bio">Bio</label>
+                    <textarea
+                      id="team-bio"
+                      name="bio"
+                      value={teamFormData.bio}
+                      onChange={handleTeamInputChange}
+                      rows="4"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="team-avatar_url">Avatar URL</label>
+                    <input
+                      type="url"
+                      id="team-avatar_url"
+                      name="avatar_url"
+                      value={teamFormData.avatar_url}
+                      onChange={handleTeamInputChange}
+                      placeholder="https://example.com/avatar.jpg"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="team-email_url">Email</label>
+                    <input
+                      type="email"
+                      id="team-email_url"
+                      name="email_url"
+                      value={teamFormData.email_url}
+                      onChange={handleTeamInputChange}
+                      placeholder="user@example.com"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="team-linkedin_url">LinkedIn URL</label>
+                    <input
+                      type="url"
+                      id="team-linkedin_url"
+                      name="linkedin_url"
+                      value={teamFormData.linkedin_url}
+                      onChange={handleTeamInputChange}
+                      placeholder="https://linkedin.com/in/username"
+                    />
+                  </div>
+
+                  <div className="form-actions">
+                    <button type="button" onClick={handleTeamCancel} className="cancel-btn">
+                      Cancel
+                    </button>
+                    <button type="submit" className="submit-btn">
+                      {editingTeamMember ? 'Update Member' : 'Create Member'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            <div className="manage-content-list">
+              {teamLoading ? (
+                <div className="loading">Loading team members...</div>
+              ) : teamMembers.length === 0 ? (
+                <div className="empty-state">No team members found. Create your first team member!</div>
+              ) : (
+                <>
+                  <div className="posts-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Occupation</th>
+                          <th>Email</th>
+                          <th>Created</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {teamMembers.map((member) => (
+                          <tr key={member.id}>
+                            <td>{member.full_name}</td>
+                            <td>{member.occupation || 'N/A'}</td>
+                            <td>{member.email_url || 'N/A'}</td>
+                            <td>{new Date(member.created_at).toLocaleDateString()}</td>
+                            <td>
+                              <button
+                                onClick={() => handleTeamEdit(member)}
+                                className="action-btn edit-btn"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleTeamDelete(member.id)}
+                                className="action-btn delete-btn"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="posts-cards">
+                    {teamMembers.map((member) => (
+                      <div key={member.id} className="post-card">
+                        <div className="post-card-header">
+                          <h3 className="post-card-title">{member.full_name}</h3>
+                          <span className="post-card-date">{new Date(member.created_at).toLocaleDateString()}</span>
+                        </div>
+                        {member.occupation && (
+                          <p className="post-card-description"><strong>Occupation:</strong> {member.occupation}</p>
+                        )}
+                        {member.bio && (
+                          <p className="post-card-description">{member.bio}</p>
+                        )}
+                        {member.email_url && (
+                          <p className="post-card-description"><strong>Email:</strong> {member.email_url}</p>
+                        )}
+                        <div className="post-card-actions">
+                          <button
+                            onClick={() => handleTeamEdit(member)}
+                            className="action-btn edit-btn"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleTeamDelete(member.id)}
+                            className="action-btn delete-btn"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {teamTotalPages > 1 && (
+                    <div className="pagination">
+                      <button
+                        onClick={() => setTeamCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={teamCurrentPage === 1}
+                      >
+                        Previous
+                      </button>
+                      <span>Page {teamCurrentPage} of {teamTotalPages}</span>
+                      <button
+                        onClick={() => setTeamCurrentPage(prev => Math.min(teamTotalPages, prev + 1))}
+                        disabled={teamCurrentPage === teamTotalPages}
                       >
                         Next
                       </button>
