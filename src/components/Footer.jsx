@@ -20,7 +20,7 @@ function Footer() {
           <div className="footer-brand">
             <h3 className="footer-brand-name">Master of Logic</h3>
             <p className="footer-description">
-              Empowering developers through software engineering, AI, and automation.
+              If you can imagine it, we can make it possible.
             </p>
             <div className="footer-contact-info">
               <div className="footer-contact-item">
