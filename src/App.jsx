@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
 import FloatingSocialPanel from './components/FloatingSocialPanel';
+import ImagePreloader from './components/ImagePreloader';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
 import Journal from './pages/Journal';
@@ -60,6 +61,7 @@ function AppRoutes() {
 
   return (
     <div className="App">
+      <ImagePreloader />
       {!isAuthRoute && !isDashboardRoute && <Nav />}
       {!isAuthRoute && !isDashboardRoute && <FloatingSocialPanel />}
         <Routes>
