@@ -104,8 +104,8 @@ function Team() {
           setError('No internet connection. Please check your network and try again.');
         }
       } else {
-        setError(err.message);
-        setTeamMembers([]);
+      setError(err.message);
+      setTeamMembers([]);
       }
     } finally {
       setLoading(false);
