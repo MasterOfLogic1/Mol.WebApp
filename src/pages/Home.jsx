@@ -9,9 +9,9 @@ function Home() {
       <div className="hero-section">
         <div className="hero-content">
           <div className="hero-left">
-            <h1 className="hero-title">Learn, Build & Integrate</h1>
+            <h1 className="hero-title">Your first step to excellence starts now.</h1>
             <p className="hero-description">
-            Intelligent Automation ▪︎ RPA ▪︎ AI ▪︎ Programming
+            "Dream it. Build it. Elevate it."
             </p>
             <div className="hero-buttons">
               <Link to="/register" className="hero-btn-primary">Get Started</Link>
