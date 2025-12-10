@@ -47,7 +47,13 @@ function Login() {
       <AlternateNavBar />
       <div className="login-container">
         <div className="login-header">
-          <img src={navbarIcon} alt="Master of Logic" className="login-logo" />
+          <img 
+            src={navbarIcon} 
+            alt="Master of Logic" 
+            className="login-logo" 
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          />
           <p className="login-header-text">Login to access our tools & resources</p>
         </div>
         <div className="login-form-wrapper">

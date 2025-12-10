@@ -66,7 +66,13 @@ function Register() {
       <AlternateNavBar />
       <div className="register-container">
         <div className="register-header">
-          <img src={navbarIcon} alt="Master of Logic" className="register-logo" />
+          <img 
+            src={navbarIcon} 
+            alt="Master of Logic" 
+            className="register-logo" 
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          />
           <p className="register-header-text">Register to access our tools & resources</p>
         </div>
         <div className="register-form-wrapper">

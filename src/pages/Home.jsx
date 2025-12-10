@@ -14,7 +14,7 @@ function Home() {
             Intelligent Automation ▪︎ RPA ▪︎ AI ▪︎ Programming
             </p>
             <div className="hero-buttons">
-              <button className="hero-btn-primary">Get Started</button>
+              <Link to="/register" className="hero-btn-primary">Get Started</Link>
               <Link to="/courses" className="hero-btn-secondary">
                 <span className="play-icon">▶</span>
                 Go to Courses
