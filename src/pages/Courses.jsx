@@ -134,7 +134,7 @@ function Courses() {
         <div className="courses-hero-content">
           <h1 className="courses-title">Our Courses</h1>
           <p className="courses-subtitle">
-            Master software engineering, AI, and automation with our comprehensive courses
+            View recommended courses prepared by experts in various fields.
           </p>
         </div>
       </div>
