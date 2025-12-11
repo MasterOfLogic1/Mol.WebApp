@@ -17,6 +17,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Verification from './pages/Verification';
 import ResetPassword from './pages/ResetPassword';
+import NewsletterVerify from './pages/NewsletterVerify';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import NotFound from './pages/NotFound';
@@ -73,6 +74,7 @@ function AppRoutes() {
           <Route path="/blog/user/:username/:slug" element={<UserBlogPost />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/team" element={<Team />} />
+          <Route path="/newsletter/verify/:verification_token" element={<NewsletterVerify />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register/verification/:token" element={<Verification />} />
