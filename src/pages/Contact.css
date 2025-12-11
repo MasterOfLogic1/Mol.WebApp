@@ -96,9 +96,108 @@
   width: 100%;
 }
 
-.contact-submit-btn:hover {
+.contact-submit-btn:hover:not(:disabled) {
   background-color: #3A00A0;
   transform: translateY(-2px);
+}
+
+.contact-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Success Message Styles */
+.contact-success-message {
+  background-color: #f0fdf4;
+  border: 2px solid #22c55e;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.success-checkmark {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+
+.checkmark-svg {
+  width: 100%;
+  height: 100%;
+  animation: scaleIn 0.5s ease-out;
+}
+
+.checkmark-circle {
+  stroke: #22c55e;
+  stroke-width: 2;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+.success-text {
+  color: #166534;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Error Message Styles */
+.contact-error-message {
+  background-color: #fef2f2;
+  border: 2px solid #ef4444;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.error-text {
+  color: #991b1b;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Animations */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes stroke {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @media (max-width: 768px) {
@@ -116,6 +215,19 @@
 
   .contact-form-wrapper {
     padding: 1.5rem;
+  }
+
+  .contact-success-message {
+    padding: 1.5rem;
+  }
+
+  .success-checkmark {
+    width: 60px;
+    height: 60px;
+  }
+
+  .success-text {
+    font-size: 1rem;
   }
 }
 

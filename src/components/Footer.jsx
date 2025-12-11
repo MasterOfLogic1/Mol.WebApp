@@ -1,16 +1,42 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { registerNewsletter } from '../api/newsletterApi';
 import './Footer.css';
 
 function Footer() {
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle newsletter subscription here
-    console.log('Newsletter signup:', email);
-    alert('Thank you for subscribing to our newsletter!');
-    setEmail('');
+    setIsSubmitting(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+
+    try {
+      const response = await registerNewsletter(email);
+      
+      // API returns 200 with { "message": "Verification email sent. Please check your inbox to verify your subscription." }
+      if (response.message) {
+        setSuccessMessage(response.message);
+        setEmail('');
+      }
+    } catch (error) {
+      setErrorMessage(error.data?.error || error.message || 'Failed to subscribe. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    // Clear messages when user starts typing
+    if (successMessage || errorMessage) {
+      setSuccessMessage(null);
+      setErrorMessage(null);
+    }
   };
 
   return (
@@ -47,17 +73,32 @@ function Footer() {
 
             <div className="footer-newsletter">
               <h4 className="footer-newsletter-title">Get Monthly Updates</h4>
+              {successMessage && (
+                <div className="footer-newsletter-message footer-newsletter-success">
+                  {successMessage}
+                </div>
+              )}
+              {errorMessage && (
+                <div className="footer-newsletter-message footer-newsletter-error">
+                  {errorMessage}
+                </div>
+              )}
               <form className="footer-newsletter-form" onSubmit={handleSubmit}>
                 <input
                   type="email"
                   placeholder="Enter your email here *"
                   className="footer-newsletter-input"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleEmailChange}
                   required
+                  disabled={isSubmitting}
                 />
-                <button type="submit" className="footer-newsletter-btn">
-                  Sign Up!
+                <button 
+                  type="submit" 
+                  className="footer-newsletter-btn"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Signing Up...' : 'Sign Up!'}
                 </button>
               </form>
             </div>

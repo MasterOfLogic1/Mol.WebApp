@@ -165,9 +165,46 @@
   width: 100%;
 }
 
-.footer-newsletter-btn:hover {
+.footer-newsletter-btn:hover:not(:disabled) {
   background-color: #CC0000;
   transform: translateY(-2px);
+}
+
+.footer-newsletter-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer-newsletter-message {
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.footer-newsletter-success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #22c55e;
+}
+
+.footer-newsletter-error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .footer-bottom {
