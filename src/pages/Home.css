@@ -1,6 +1,8 @@
 .home {
   width: 100%;
   min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
 }
 
 .hero-section {
@@ -9,6 +11,8 @@
   background: #6b34ca;
   position: relative;
   overflow: hidden;
+  flex: 1;
+  min-height: calc(100vh - 200px);
 }
 
 .hero-section::before {
