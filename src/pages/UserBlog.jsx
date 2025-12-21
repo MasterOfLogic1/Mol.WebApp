@@ -79,10 +79,17 @@ function UserBlog() {
       { property: 'og:type', content: 'profile' },
       { property: 'og:url', content: currentUrl },
       { property: 'og:site_name', content: 'Master of Logic' },
+      { property: 'og:locale', content: 'en_US' },
     ];
 
     if (profileImage) {
-      ogTags.push({ property: 'og:image', content: profileImage });
+      ogTags.push(
+        { property: 'og:image', content: profileImage },
+        { property: 'og:image:secure_url', content: profileImage },
+        { property: 'og:image:type', content: 'image/jpeg' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' }
+      );
     }
 
     ogTags.forEach(tag => {
