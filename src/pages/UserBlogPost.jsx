@@ -55,7 +55,7 @@ function UserBlogPost() {
     return (
       <div className="blog-post">
         <div className="blog-post-container">
-          <button onClick={() => navigate(`/blog/user/${username}`)} className="back-btn">
+          <button onClick={() => navigate(`/journals/user/${username}`)} className="back-btn">
             ← Back to Profile
           </button>
           <div className="blog-post-error">
@@ -71,7 +71,7 @@ function UserBlogPost() {
   return (
     <div className="blog-post">
       <div className="blog-post-container">
-        <button onClick={() => navigate(`/blog/user/${username}`)} className="back-btn">
+        <button onClick={() => navigate(`/journals/user/${username}`)} className="back-btn">
           ← Back to Profile
         </button>
         

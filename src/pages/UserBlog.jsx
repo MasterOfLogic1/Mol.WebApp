@@ -18,6 +18,83 @@ function UserBlog() {
     fetchUserData();
   }, [username, currentPage]);
 
+  // Update meta tags for social media sharing
+  useEffect(() => {
+    if (!userProfile) return;
+
+    // Get full name
+    const getFullName = () => {
+      if (!userProfile?.profile) return 'N/A';
+      const { firstname, middlename, lastname } = userProfile.profile;
+      return [firstname, middlename, lastname].filter(Boolean).join(' ') || 'N/A';
+    };
+
+    const fullName = getFullName();
+    const bio = userProfile.bio || userProfile.profile?.bio || '';
+    let profileImage = userProfile.profile?.thumbnail_url || userProfile.thumbnail_url || '';
+    
+    // Ensure image URL is absolute for Open Graph
+    if (profileImage && !profileImage.startsWith('http')) {
+      profileImage = `${window.location.origin}${profileImage}`;
+    }
+    
+    const currentUrl = window.location.href;
+    const title = `Read journals by ${fullName} | Master of Logic`;
+    const description = bio || `Explore articles and journals written by ${fullName} on Master of Logic.`;
+
+    // Update document title
+    document.title = title;
+
+    // Remove existing meta tags if any
+    const existingMetaTags = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]');
+    existingMetaTags.forEach(tag => tag.remove());
+
+    // Create and add Open Graph meta tags
+    const ogTags = [
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:type', content: 'profile' },
+      { property: 'og:url', content: currentUrl },
+      { property: 'og:site_name', content: 'Master of Logic' },
+    ];
+
+    if (profileImage) {
+      ogTags.push({ property: 'og:image', content: profileImage });
+    }
+
+    ogTags.forEach(tag => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', tag.property);
+      meta.setAttribute('content', tag.content);
+      document.head.appendChild(meta);
+    });
+
+    // Create and add Twitter Card meta tags
+    const twitterTags = [
+      { name: 'twitter:card', content: 'summary' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+    ];
+
+    if (profileImage) {
+      twitterTags.push({ name: 'twitter:image', content: profileImage });
+    }
+
+    twitterTags.forEach(tag => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('name', tag.name);
+      meta.setAttribute('content', tag.content);
+      document.head.appendChild(meta);
+    });
+
+    // Cleanup function to remove meta tags when component unmounts
+    return () => {
+      const metaTags = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]');
+      metaTags.forEach(tag => tag.remove());
+      document.title = 'Master of Logic - Software Engineering, AI & Automation';
+    };
+  }, [userProfile]);
+
   const fetchUserData = async () => {
     try {
       setLoading(true);
@@ -141,8 +218,8 @@ function UserBlog() {
         {posts.length === 0 ? (
           <div className="user-blog-empty">
             <p>No blog posts found from this user.</p>
-            <button onClick={() => navigate('/blog')} className="back-btn">
-              Back to Blog
+            <button onClick={() => navigate('/journals')} className="back-btn">
+              Back to Journals
             </button>
           </div>
         ) : (
@@ -164,7 +241,7 @@ function UserBlog() {
                       <span className="user-blog-card-date">{formatDate(post.date_uploaded)}</span>
                       <button 
                         className="user-blog-read-btn"
-                        onClick={() => navigate(`/blog/user/${username}/${post.slug || post.id}`)}
+                        onClick={() => navigate(`/journals/user/${username}/${post.slug || post.id}`)}
                       >
                         Read More →
                       </button>

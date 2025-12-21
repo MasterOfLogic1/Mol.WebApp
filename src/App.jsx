@@ -70,8 +70,8 @@ function AppRoutes() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/journals" element={<Journal />} />
           <Route path="/journals/:slug" element={<JournalPost />} />
-          <Route path="/blog/user/:username" element={<UserBlog />} />
-          <Route path="/blog/user/:username/:slug" element={<UserBlogPost />} />
+          <Route path="/journals/user/:username" element={<UserBlog />} />
+          <Route path="/journals/user/:username/:slug" element={<UserBlogPost />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/team" element={<Team />} />
           <Route path="/newsletter/verify/:verification_token" element={<NewsletterVerify />} />

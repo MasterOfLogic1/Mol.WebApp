@@ -120,7 +120,7 @@ function JournalPost() {
           {post.creator_username && (
             <div className="blog-post-author-section">
               <button 
-                onClick={() => navigate(`/blog/user/${post.creator_username}`)}
+                onClick={() => navigate(`/journals/user/${post.creator_username}`)}
                 className="view-more-articles-btn"
               >
                 View more articles from this user →
