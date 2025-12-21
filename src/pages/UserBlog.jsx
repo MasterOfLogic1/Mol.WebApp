@@ -20,7 +20,24 @@ function UserBlog() {
 
   // Update meta tags for social media sharing
   useEffect(() => {
-    if (!userProfile) return;
+    // Set meta tags immediately, even if userProfile is not loaded yet
+    // This ensures crawlers see something, and we'll update when profile loads
+    if (!userProfile) {
+      // Set a default title based on username while loading
+      const defaultTitle = `Read journals by @${username} | Master of Logic`;
+      document.title = defaultTitle;
+      
+      // Set default Open Graph tags
+      const existingMetaTags = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"], meta[name="description"]');
+      existingMetaTags.forEach(tag => tag.remove());
+      
+      const ogTitle = document.createElement('meta');
+      ogTitle.setAttribute('property', 'og:title');
+      ogTitle.setAttribute('content', defaultTitle);
+      document.head.appendChild(ogTitle);
+      
+      return;
+    }
 
     // Get full name
     const getFullName = () => {

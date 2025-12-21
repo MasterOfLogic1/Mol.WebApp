@@ -38,12 +38,12 @@ function Contact() {
       if (response.message) {
         setSuccessMessage(response.message);
         // Reset form on success
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: ''
-        });
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: ''
+    });
       }
     } catch (error) {
       // Handle different error types
@@ -87,7 +87,7 @@ function Contact() {
             {errorMessage && (
               <div className="contact-error-message">
                 <p className="error-text">{errorMessage}</p>
-              </div>
+            </div>
             )}
 
             <form className="contact-form" onSubmit={handleSubmit}>
