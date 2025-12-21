@@ -46,8 +46,14 @@ function UserBlog() {
     document.title = title;
 
     // Remove existing meta tags if any
-    const existingMetaTags = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]');
+    const existingMetaTags = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"], meta[name="description"]');
     existingMetaTags.forEach(tag => tag.remove());
+
+    // Add standard meta description
+    const metaDescription = document.createElement('meta');
+    metaDescription.setAttribute('name', 'description');
+    metaDescription.setAttribute('content', description);
+    document.head.appendChild(metaDescription);
 
     // Create and add Open Graph meta tags
     const ogTags = [
@@ -89,7 +95,7 @@ function UserBlog() {
 
     // Cleanup function to remove meta tags when component unmounts
     return () => {
-      const metaTags = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]');
+      const metaTags = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"], meta[name="description"]');
       metaTags.forEach(tag => tag.remove());
       document.title = 'Master of Logic - Software Engineering, AI & Automation';
     };
