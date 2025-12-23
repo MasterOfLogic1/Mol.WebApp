@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getBlogPost } from '../api/blogsApi';
 import './JournalPost.css';
 
@@ -112,10 +114,120 @@ function JournalPost() {
             <p className="blog-post-description">{post.description}</p>
           )}
           
-          <div 
-            className="blog-post-body"
-            dangerouslySetInnerHTML={{ __html: post.body || '' }}
-          />
+          <div className="blog-post-body">
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[]}
+              components={{
+                img: ({node, ...props}) => {
+                  // Extract src and alt - ReactMarkdown passes them in different ways
+                  let imageSrc = props.src || '';
+                  let imageAlt = props.alt || '';
+                  
+                  // If src is empty, try to get it from node properties
+                  if (!imageSrc && node?.properties) {
+                    imageSrc = node.properties.src || '';
+                    imageAlt = node.properties.alt || '';
+                  }
+                  
+                  // If still no src, try to extract from the markdown directly
+                  if (!imageSrc) {
+                    const markdownText = post.body || '';
+                    // Match markdown image syntax: ![alt](url) - handle both regular and base64 URLs
+                    const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+                    const matches = [...markdownText.matchAll(imageRegex)];
+                    if (matches.length > 0) {
+                      // Use the first match (you might want to handle multiple images differently)
+                      imageAlt = matches[0][1] || '';
+                      imageSrc = matches[0][2] || '';
+                    }
+                  }
+                  
+                  if (!imageSrc) {
+                    return null;
+                  }
+                  
+                  return (
+                    <img 
+                      src={imageSrc}
+                      alt={imageAlt}
+                      style={{
+                        maxWidth: '100%', 
+                        height: 'auto', 
+                        borderRadius: '8px', 
+                        margin: '1.5rem 0',
+                        display: 'block'
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  );
+                },
+                // Handle paragraph nodes that might contain base64 URLs as text
+                p: ({node, children, ...props}) => {
+                  // Check if paragraph contains text with base64 image
+                  const paragraphText = node.children
+                    ?.map(child => child.type === 'text' ? child.value : '')
+                    .join('') || '';
+                  
+                  if (paragraphText.includes('data:image/') && paragraphText.includes('base64,')) {
+                    // Extract the full base64 URL (may span multiple text nodes)
+                    const base64Match = paragraphText.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
+                    if (base64Match) {
+                      return (
+                        <img 
+                          src={base64Match[0]}
+                          alt=""
+                          style={{
+                            maxWidth: '100%', 
+                            height: 'auto', 
+                            borderRadius: '8px', 
+                            margin: '1.5rem 0',
+                            display: 'block'
+                          }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      );
+                    }
+                  }
+                  return <p {...props}>{children}</p>;
+                },
+                // Handle text nodes that might contain base64 URLs
+                text: ({node, ...props}) => {
+                  const text = node.value || '';
+                  // Check if this text looks like a base64 image URL
+                  if (text.includes('data:image/') && text.includes('base64,')) {
+                    // Extract the full base64 URL
+                    const base64Match = text.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
+                    if (base64Match) {
+                      return (
+                        <img 
+                          src={base64Match[0]}
+                          alt=""
+                          style={{
+                            maxWidth: '100%', 
+                            height: 'auto', 
+                            borderRadius: '8px', 
+                            margin: '1.5rem 0',
+                            display: 'block'
+                          }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      );
+                    }
+                  }
+                  return <>{text}</>;
+                }
+              }}
+            >
+              {post.body || ''}
+            </ReactMarkdown>
+          </div>
           
           {post.creator_username && (
             <div className="blog-post-author-section">

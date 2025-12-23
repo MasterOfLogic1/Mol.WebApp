@@ -269,6 +269,29 @@
   border-color: #4A00C8;
 }
 
+/* Markdown Editor Styles */
+.form-group .w-md-editor {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.form-group .w-md-editor:focus-within {
+  border-color: #4A00C8;
+}
+
+.markdown-hint {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f0f9ff;
+  border-left: 3px solid #4A00C8;
+  border-radius: 4px;
+}
+
+.markdown-hint small {
+  color: #1e40af;
+  font-size: 0.875rem;
+}
+
 .tag-input-wrapper {
   display: flex;
   gap: 0.5rem;

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import htmlToMd from 'html-to-md';
+import { marked } from 'marked';
 import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from '../api/blogsApi';
 import { getCourses, createCourse, updateCourse, deleteCourse } from '../api/courseApi';
 import { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember } from '../api/teamApi';
@@ -153,10 +155,48 @@ function ManageContent() {
     }
 
     try {
+      // Convert HTML (from WYSIWYG editor) to Markdown before saving
+      let htmlBody = formData.body || '';
+      
+      // Extract images from HTML and convert them to markdown
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlBody;
+      const images = Array.from(tempDiv.querySelectorAll('img'));
+      
+      // Replace each img tag with markdown image syntax
+      images.forEach((img) => {
+        const src = img.getAttribute('src') || '';
+        const alt = img.getAttribute('alt') || '';
+        if (src) {
+          // Create markdown image syntax
+          const markdownImage = `![${alt}](${src})`;
+          // Create a paragraph element with the markdown text
+          const p = document.createElement('p');
+          p.textContent = markdownImage;
+          // Replace img with the paragraph
+          img.parentNode.replaceChild(p, img);
+        } else {
+          // Remove images without src
+          img.remove();
+        }
+      });
+      
+      // Convert HTML to markdown
+      let markdownBody = htmlToMd(tempDiv.innerHTML);
+      
+      // Clean up: html-to-md might add extra formatting, so ensure images are correct
+      // Replace any escaped or modified image syntax back to proper markdown
+      markdownBody = markdownBody.replace(/!\\?\[([^\]]*)\]\\?\(([^)]+)\)/g, '![$1]($2)');
+      
+      const formDataWithMarkdown = {
+        ...formData,
+        body: markdownBody
+      };
+
       if (editingPost) {
-        await updateBlogPost(editingPost.id, formData);
+        await updateBlogPost(editingPost.id, formDataWithMarkdown);
       } else {
-        await createBlogPost(formData);
+        await createBlogPost(formDataWithMarkdown);
       }
       setShowForm(false);
       setEditingPost(null);
@@ -169,10 +209,29 @@ function ManageContent() {
 
   const handleEdit = (post) => {
     setEditingPost(post);
+    // Convert Markdown to HTML for WYSIWYG editor
+    let htmlBody = post.body || '';
+    
+    // First, convert markdown images to HTML img tags before using marked.parse
+    // This ensures base64 images are properly handled
+    if (htmlBody) {
+      // Match markdown image syntax: ![alt](url)
+      const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+      htmlBody = htmlBody.replace(imageRegex, (match, alt, src) => {
+        // Escape alt text for HTML
+        const escapedAlt = alt.replace(/"/g, '&quot;');
+        // Return HTML img tag
+        return `<img src="${src}" alt="${escapedAlt}" />`;
+      });
+      
+      // Now parse the rest of the markdown (headers, lists, etc.)
+      htmlBody = marked.parse(htmlBody);
+    }
+    
     setFormData({
       title: post.title || '',
       description: post.description || '',
-      body: post.body || '',
+      body: htmlBody,
       tag_names: post.tag_names || [],
       thumbnail: null,
     });
@@ -500,6 +559,7 @@ function ManageContent() {
                     ['bold', 'italic', 'underline', 'strike'],
                     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
                     [{ 'color': [] }, { 'background': [] }],
+                    ['blockquote', 'code-block'],
                     ['link', 'image'],
                     ['clean']
                   ],
@@ -509,10 +569,14 @@ function ManageContent() {
                   'bold', 'italic', 'underline', 'strike',
                   'list', 'bullet',
                   'color', 'background',
+                  'blockquote', 'code-block',
                   'link', 'image'
                 ]}
-                placeholder="Write your blog post content here..."
+                placeholder="Write your blog post content here... (Type normally like in Microsoft Word - markdown is handled automatically!)"
               />
+              <div className="markdown-hint">
+                <small>💡 Tip: Type normally like in Microsoft Word! You can also paste ChatGPT responses - they'll be converted automatically. Content is stored as markdown behind the scenes.</small>
+              </div>
             </div>
 
             <div className="form-group">

@@ -21,7 +21,7 @@ function Footer() {
       // API returns 200 with { "message": "Verification email sent. Please check your inbox to verify your subscription." }
       if (response.message) {
         setSuccessMessage(response.message);
-        setEmail('');
+    setEmail('');
       }
     } catch (error) {
       setErrorMessage(error.data?.error || error.message || 'Failed to subscribe. Please try again later.');
