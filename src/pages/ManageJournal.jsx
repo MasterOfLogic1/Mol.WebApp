@@ -1,500 +1,257 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import htmlToMd from 'html-to-md';
-import { marked } from 'marked';
-import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from '../api/blogsApi';
-import { useAuth } from '../context/AuthContext';
-import './ManageContent.css';
+import React, { useEffect, useState } from "react";
+import JournalEditor from "../components/JournalEditor";
+import {
+  getBlogPosts,
+  createBlogPost,
+  updateBlogPost,
+  deleteBlogPost
+} from "../api/blogsApi";
+import { useAuth } from "../context/AuthContext";
+import { marked } from "marked";
+import "./ManageContent.css";
 
 function ManageJournal() {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [descriptionError, setDescriptionError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const [error, setError] = useState("");
+
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    body: '',
+    title: "",
+    description: "",
+    body: null,
     tag_names: [],
-    thumbnail: null,
+    thumbnail: null
   });
-  const [tagInput, setTagInput] = useState('');
-  const [thumbnailPreview, setThumbnailPreview] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    if (user?.username) {
-      fetchPosts();
-    }
-  }, [currentPage, user?.username]);
+    if (user?.username) fetchPosts();
+  }, [user?.username]);
 
   const fetchPosts = async () => {
-    if (!user?.username) return;
-    
     try {
       setLoading(true);
-      const response = await getBlogPosts({ page: currentPage, page_size: 10, username: user.username });
-      setPosts(response.results || []);
-      setTotalPages(response.total_pages || 1);
-      setError('');
-    } catch (err) {
-      setError(err.message || 'Failed to fetch blog posts');
+      const res = await getBlogPosts({ username: user.username });
+      setPosts(res.results || []);
+      setError("");
+    } catch {
+      setError("Failed to load posts");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === 'thumbnail' && files && files[0]) {
-      const file = files[0];
-      setFormData(prev => ({
-        ...prev,
-        thumbnail: file,
-      }));
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setThumbnailPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-      }));
-      
-      // Validate description length
-      if (name === 'description') {
-        if (value.length > 258) {
-          setDescriptionError(`Description must be 258 characters or less. Current: ${value.length}`);
-        } else {
-          setDescriptionError('');
-        }
-      }
-    }
-  };
-
-  const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tag_names.includes(tagInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tag_names: [...prev.tag_names, tagInput.trim()],
-      }));
-      setTagInput('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove) => {
-    setFormData(prev => ({
-      ...prev,
-      tag_names: prev.tag_names.filter(tag => tag !== tagToRemove),
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setDescriptionError('');
-
-    if (formData.description.length > 258) {
-      setDescriptionError('Description must be 258 characters or less');
-      return;
-    }
-
     try {
-      // Convert HTML (from WYSIWYG editor) to Markdown before saving
-      let htmlBody = formData.body || '';
-      
-      // Extract images from HTML and convert them to markdown
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = htmlBody;
-      const images = Array.from(tempDiv.querySelectorAll('img'));
-      
-      // Replace each img tag with markdown image syntax
-      images.forEach((img) => {
-        const src = img.getAttribute('src') || '';
-        const alt = img.getAttribute('alt') || '';
-        if (src) {
-          // Create markdown image syntax
-          const markdownImage = `![${alt}](${src})`;
-          // Create a paragraph element with the markdown text
-          const p = document.createElement('p');
-          p.textContent = markdownImage;
-          // Replace img with the paragraph
-          img.parentNode.replaceChild(p, img);
-        } else {
-          // Remove images without src
-          img.remove();
-        }
-      });
-      
-      // Convert HTML to markdown
-      let markdownBody = htmlToMd(tempDiv.innerHTML);
-      
-      // Clean up: html-to-md might add extra formatting, so ensure images are correct
-      // Replace any escaped or modified image syntax back to proper markdown
-      markdownBody = markdownBody.replace(/!\\?\[([^\]]*)\]\\?\(([^)]+)\)/g, '![$1]($2)');
-      
-      const formDataWithMarkdown = {
-        ...formData,
-        body: markdownBody
-      };
-
+      const payload = { ...formData, body: JSON.stringify(formData.body) };
       if (editingPost) {
-        await updateBlogPost(editingPost.id, formDataWithMarkdown);
+        await updateBlogPost(editingPost.id, payload);
       } else {
-        await createBlogPost(formDataWithMarkdown);
+        await createBlogPost(payload);
       }
-      setShowForm(false);
-      setEditingPost(null);
       resetForm();
       fetchPosts();
-    } catch (err) {
-      setError(err.message || 'Failed to save blog post');
+    } catch {
+      setError("Failed to save post");
     }
   };
 
   const handleEdit = (post) => {
-    setEditingPost(post);
-    // Convert Markdown to HTML for WYSIWYG editor
-    let htmlBody = post.body || '';
-    
-    // First, convert markdown images to HTML img tags before using marked.parse
-    // This ensures base64 images are properly handled
-    if (htmlBody) {
-      // Match markdown image syntax: ![alt](url)
-      const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
-      htmlBody = htmlBody.replace(imageRegex, (match, alt, src) => {
-        // Escape alt text for HTML
-        const escapedAlt = alt.replace(/"/g, '&quot;');
-        // Return HTML img tag
-        return `<img src="${src}" alt="${escapedAlt}" />`;
-      });
+    try {
+      setEditingPost(post);
       
-      // Now parse the rest of the markdown (headers, lists, etc.)
-      htmlBody = marked.parse(htmlBody);
+      // Handle body format - could be JSON string, markdown, or HTML
+      let bodyContent = null;
+      if (post.body) {
+        try {
+          // Try parsing as JSON first (TipTap format)
+          const parsed = typeof post.body === 'string' ? JSON.parse(post.body) : post.body;
+          // Check if it's a valid TipTap JSON structure
+          if (parsed && typeof parsed === 'object' && (parsed.type === 'doc' || parsed.content)) {
+            bodyContent = parsed;
+          } else {
+            // Not valid TipTap JSON, treat as markdown
+            throw new Error('Not TipTap JSON');
+          }
+        } catch {
+          // If not JSON, treat as markdown and convert to HTML
+          // TipTap can accept HTML directly
+          let htmlBody = typeof post.body === 'string' ? post.body : String(post.body);
+          
+          // Convert markdown images to HTML img tags first
+          const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+          htmlBody = htmlBody.replace(imageRegex, (match, alt, src) => {
+            const escapedAlt = alt.replace(/"/g, '&quot;');
+            return `<img src="${src}" alt="${escapedAlt}" />`;
+          });
+          
+          // Parse markdown to HTML
+          htmlBody = marked.parse(htmlBody);
+          bodyContent = htmlBody;
+        }
+      }
+      
+      setFormData({
+        title: post.title || "",
+        description: post.description || "",
+        body: bodyContent,
+        tag_names: post.tag_names || [],
+        thumbnail: null
+      });
+      setShowForm(true);
+    } catch (err) {
+      console.error('Error in handleEdit:', err);
+      setError(`Failed to load post for editing: ${err.message}`);
     }
-    
-    setFormData({
-      title: post.title || '',
-      description: post.description || '',
-      body: htmlBody,
-      tag_names: post.tag_names || [],
-      thumbnail: null,
-    });
-    setThumbnailPreview(post.thumbnail_url || null);
-    setShowForm(true);
   };
 
-  const handleDelete = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this blog post?')) {
-      return;
-    }
-
-    try {
-      await deleteBlogPost(postId);
-      fetchPosts();
-    } catch (err) {
-      setError(err.message || 'Failed to delete blog post');
-    }
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this post?")) return;
+    await deleteBlogPost(id);
+    fetchPosts();
   };
 
   const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      body: '',
-      tag_names: [],
-      thumbnail: null,
-    });
-    setTagInput('');
-    setThumbnailPreview(null);
-    setDescriptionError('');
-  };
-
-  const handleCancel = () => {
-    setShowForm(false);
+    setFormData({ title: "", description: "", body: null, tag_names: [], thumbnail: null });
     setEditingPost(null);
-    resetForm();
+    setShowForm(false);
   };
-
-  if (!user?.username) {
-    return (
-      <div className="manage-content">
-        <div className="manage-content-error">
-          Unable to load your username. Please try refreshing the page.
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="manage-content">
-      <div className="manage-content-section">
-        <div className="manage-content-section-header">
-          <div className="manage-content-section-title">
-            <h2>My Journal</h2>
-          </div>
-          <button 
-            className="manage-content-btn" 
-            onClick={() => { 
-              setShowForm(true); 
-              resetForm(); 
-            }}
-          >
-            Create
-          </button>
+      <div className="manage-content-header">
+        <h2>My Journal</h2>
+        <button className="manage-content-btn" onClick={() => setShowForm(true)}>Create</button>
+      </div>
+
+      {error && <div className="manage-content-error">{error}</div>}
+
+      {showForm && (
+        <div className="manage-content-form-wrapper">
+          <form onSubmit={handleSubmit} className="manage-content-form">
+            <div className="form-header">
+              <h3>{editingPost ? "Edit Journal Post" : "Create New Journal Post"}</h3>
+              <button type="button" onClick={resetForm} className="form-close-btn">×</button>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="title">Title *</label>
+              <input
+                type="text"
+                id="title"
+                placeholder="Title"
+                required
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="description">Description (max 258 chars) *</label>
+              <textarea
+                id="description"
+                placeholder="Description (max 258 chars)"
+                maxLength={258}
+                required
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Content *</label>
+              <JournalEditor
+                value={formData.body}
+                onChange={(json) => setFormData(prev => ({ ...prev, body: json }))}
+              />
+            </div>
+
+            <div className="form-actions">
+              <button type="button" onClick={resetForm} className="cancel-btn">Cancel</button>
+              <button type="submit" className="submit-btn">{editingPost ? "Update" : "Create"}</button>
+            </div>
+          </form>
         </div>
+      )}
 
-        {error && <div className="manage-content-error">{error}</div>}
+      <div className="manage-content-list">
+        {loading ? (
+          <div className="loading">Loading posts...</div>
+        ) : posts.length === 0 ? (
+          <div className="empty-state">No journal posts yet. Create your first one!</div>
+        ) : (
+          <>
+            <div className="posts-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {posts.map((post) => (
+                    <tr key={post.id}>
+                      <td>{post.title}</td>
+                      <td>{post.description}</td>
+                      <td>{post.date_uploaded ? new Date(post.date_uploaded).toLocaleDateString() : 'N/A'}</td>
+                      <td>
+                        <button
+                          onClick={() => handleEdit(post)}
+                          className="action-btn edit-btn"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(post.id)}
+                          className="action-btn delete-btn"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-        {showForm && (
-          <div className="manage-content-form-wrapper">
-            <form className="manage-content-form" onSubmit={handleSubmit}>
-              <div className="form-header">
-                <h3>{editingPost ? 'Edit Blog Post' : 'Create New Blog Post'}</h3>
-                <button type="button" onClick={handleCancel} className="form-close-btn">×</button>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="title">Title *</label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="description">Description *</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  required
-                  rows="3"
-                />
-                <div className={`description-char-count ${formData.description.length > 258 ? 'error' : ''}`}>
-                  {formData.description.length} / 258 characters
-                </div>
-                {descriptionError && (
-                  <div className="form-error-message">{descriptionError}</div>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="thumbnail">Thumbnail Image</label>
-                <input
-                  type="file"
-                  id="thumbnail"
-                  name="thumbnail"
-                  accept="image/*"
-                  onChange={handleInputChange}
-                />
-                {thumbnailPreview && (
-                  <div className="thumbnail-preview">
-                    <img src={thumbnailPreview} alt="Thumbnail preview" />
+            <div className="posts-cards">
+              {posts.map((post) => (
+                <div key={post.id} className="post-card">
+                  <div className="post-card-header">
+                    <h3 className="post-card-title">{post.title}</h3>
+                    {post.date_uploaded && (
+                      <span className="post-card-date">{new Date(post.date_uploaded).toLocaleDateString()}</span>
+                    )}
+                  </div>
+                  <p className="post-card-description">{post.description}</p>
+                  <div className="post-card-actions">
                     <button
-                      type="button"
-                      onClick={() => {
-                        setFormData(prev => ({ ...prev, thumbnail: null }));
-                        setThumbnailPreview(null);
-                        const fileInput = document.getElementById('thumbnail');
-                        if (fileInput) fileInput.value = '';
-                      }}
-                      className="thumbnail-remove-btn"
+                      onClick={() => handleEdit(post)}
+                      className="action-btn edit-btn"
                     >
-                      Remove
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(post.id)}
+                      className="action-btn delete-btn"
+                    >
+                      Delete
                     </button>
                   </div>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="body">Body *</label>
-                <ReactQuill
-                  theme="snow"
-                  value={formData.body}
-                  onChange={(value) => setFormData(prev => ({ ...prev, body: value }))}
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      [{ 'color': [] }, { 'background': [] }],
-                      ['blockquote', 'code-block'],
-                      ['link', 'image'],
-                      ['clean']
-                    ],
-                  }}
-                  formats={[
-                    'header',
-                    'bold', 'italic', 'underline', 'strike',
-                    'list', 'bullet',
-                    'color', 'background',
-                    'blockquote', 'code-block',
-                    'link', 'image'
-                  ]}
-                  placeholder="Write your blog post content here... (Type normally like in Microsoft Word - markdown is handled automatically!)"
-                />
-                <div className="markdown-hint">
-                  <small>💡 Tip: Type normally like in Microsoft Word! You can also paste ChatGPT responses - they'll be converted automatically. Content is stored as markdown behind the scenes.</small>
                 </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="tags">Tags</label>
-                <div className="tag-input-wrapper">
-                  <input
-                    type="text"
-                    id="tags"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddTag();
-                      }
-                    }}
-                    placeholder="Type tag and press Enter"
-                  />
-                  <button type="button" onClick={handleAddTag} className="tag-add-btn">
-                    Add
-                  </button>
-                </div>
-                <div className="tags-list">
-                  {formData.tag_names.map((tag, index) => (
-                    <span key={index} className="tag-item">
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTag(tag)}
-                        className="tag-remove-btn"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="form-actions">
-                <button type="button" onClick={handleCancel} className="cancel-btn">
-                  Cancel
-                </button>
-                <button type="submit" className="submit-btn">
-                  {editingPost ? 'Update Post' : 'Create Post'}
-                </button>
-              </div>
-            </form>
-          </div>
+              ))}
+            </div>
+          </>
         )}
-
-        <div className="manage-content-list">
-          {loading ? (
-            <div className="loading">Loading posts...</div>
-          ) : posts.length === 0 ? (
-            <div className="empty-state">No blog posts found. Create your first post!</div>
-          ) : (
-            <>
-              <div className="posts-table">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Title</th>
-                      <th>Description</th>
-                      <th>Created</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {posts.map((post) => (
-                      <tr key={post.id}>
-                        <td>{post.title}</td>
-                        <td>{post.description}</td>
-                        <td>{new Date(post.date_uploaded).toLocaleDateString()}</td>
-                        <td>
-                          <button
-                            onClick={() => handleEdit(post)}
-                            className="action-btn edit-btn"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(post.id)}
-                            className="action-btn delete-btn"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="posts-cards">
-                {posts.map((post) => (
-                  <div key={post.id} className="post-card">
-                    <div className="post-card-header">
-                      <h3 className="post-card-title">{post.title}</h3>
-                      <span className="post-card-date">{new Date(post.date_uploaded).toLocaleDateString()}</span>
-                    </div>
-                    <p className="post-card-description">{post.description}</p>
-                    <div className="post-card-actions">
-                      <button
-                        onClick={() => handleEdit(post)}
-                        className="action-btn edit-btn"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(post.id)}
-                        className="action-btn delete-btn"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {totalPages > 1 && (
-                <div className="pagination">
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span>Page {currentPage} of {totalPages}</span>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
       </div>
     </div>
   );
 }
 
 export default ManageJournal;
-
