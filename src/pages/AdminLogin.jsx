@@ -107,6 +107,9 @@ function AdminLogin() {
           </form>
         </div>
       </div>
+      <div className="admin-login-warning-banner">
+        <p>⚠️ Warning: This is an admin-only area. Unauthorized access is prohibited.</p>
+      </div>
     </div>
   );
 }
