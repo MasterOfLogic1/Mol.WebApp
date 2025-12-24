@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getUserProfile } from '../api/profileApi';
 import ManageContent from './ManageContent';
 import Analytics from './Analytics';
 import ManageUsers from './ManageUsers';
@@ -13,6 +14,30 @@ function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await getUserProfile();
+        setUserProfile(profile);
+      } catch (err) {
+        // Profile might not exist yet, that's okay
+        console.log('Profile not found:', err);
+      }
+    };
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
+
+  const getFirstName = () => {
+    if (userProfile?.firstname) {
+      return userProfile.firstname;
+    }
+    // Fallback to email if no profile exists
+    return user?.email || 'User';
+  };
 
   const handleLogout = () => {
     logout();
@@ -75,7 +100,7 @@ function Dashboard() {
             <div className="dashboard-overlay" onClick={() => setIsMenuOpen(false)}></div>
           )}
           <div className="dashboard-header">
-            <h1>Welcome, {user?.email}</h1>
+            <h1>Welcome, {getFirstName()}</h1>
             <p>Access your tools and resources</p>
           </div>
 

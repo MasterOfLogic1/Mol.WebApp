@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getUserProfile } from '../api/profileApi';
 import AdminManageUsers from './AdminManageUsers';
 import AdminManageCourses from './AdminManageCourses';
 import AdminManageJournal from './AdminManageJournal';
+import Analytics from './Analytics';
 import './Dashboard.css';
 
 function AdminDashboard() {
@@ -11,6 +13,30 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await getUserProfile();
+        setUserProfile(profile);
+      } catch (err) {
+        // Profile might not exist yet, that's okay
+        console.log('Profile not found:', err);
+      }
+    };
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
+
+  const getFirstName = () => {
+    if (userProfile?.firstname) {
+      return userProfile.firstname;
+    }
+    // Fallback to email if no profile exists
+    return user?.email || 'Admin';
+  };
 
   const handleLogout = () => {
     logout();
@@ -62,6 +88,13 @@ function AdminDashboard() {
             >
               Manage Journal
             </Link>
+            <Link
+              to="/admin/analytics"
+              className={`dashboard-nav-link ${location.pathname === '/admin/analytics' ? 'active' : ''}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Analytics
+            </Link>
             <button className="dashboard-nav-link logout" onClick={handleLogout}>
               Logout
             </button>
@@ -78,7 +111,7 @@ function AdminDashboard() {
             <div className="dashboard-overlay" onClick={() => setIsMenuOpen(false)}></div>
           )}
           <div className="dashboard-header">
-            <h1>Welcome, {user?.email}</h1>
+            <h1>Welcome, {getFirstName()}</h1>
             <p>Admin Dashboard</p>
           </div>
 
@@ -89,6 +122,8 @@ function AdminDashboard() {
               <AdminManageCourses />
             ) : location.pathname === '/admin/manage-journal' ? (
               <AdminManageJournal />
+            ) : location.pathname === '/admin/analytics' ? (
+              <Analytics />
             ) : (
               <AdminDashboardHome />
             )}
