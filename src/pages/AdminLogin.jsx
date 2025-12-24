@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import AlternateNavBar from '../components/AlternateNavBar';
@@ -60,7 +60,7 @@ function AdminLogin() {
   };
 
   return (
-    <div className="login">
+    <div className="login admin-login">
       <AlternateNavBar />
       <div className="login-container">
         <div className="login-header">
@@ -108,7 +108,12 @@ function AdminLogin() {
         </div>
       </div>
       <div className="admin-login-warning-banner">
-        <p>⚠️ Warning: This is an admin-only area. Unauthorized access is prohibited.</p>
+        <p>
+          ⚠️ Warning: This is an admin-only area. Unauthorized access is prohibited.{' '}
+          <Link to="/login" className="admin-login-warning-link">
+            Go to regular login
+          </Link>
+        </p>
       </div>
     </div>
   );
