@@ -107,7 +107,7 @@ function Footer() {
         
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © {new Date().getFullYear()} Master of Logic. All rights reserved.
+            © {new Date().getFullYear()} Master of Logic. All rights reserved. <Link to="/admin/login" className="footer-admin-link">Admin</Link>
           </p>
         </div>
       </div>

@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import ManageContent from './ManageContent';
-import Analytics from './Analytics';
-import ManageUsers from './ManageUsers';
-import Profile from './Profile';
-import ManageJournal from './ManageJournal';
+import AdminManageUsers from './AdminManageUsers';
+import AdminManageCourses from './AdminManageCourses';
+import AdminManageJournal from './AdminManageJournal';
 import './Dashboard.css';
 
-function Dashboard() {
-  const { user, logout, isAdmin, isWriter } = useAuth();
+function AdminDashboard() {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
@@ -28,7 +26,7 @@ function Dashboard() {
       <div className="dashboard-container">
         <aside className={`dashboard-sidebar ${isMenuOpen ? 'open' : 'collapsed'}`}>
           <div className="dashboard-sidebar-header">
-            <h2>Dashboard</h2>
+            <h2>Admin Dashboard</h2>
             <button className="dashboard-menu-toggle" onClick={toggleMenu} aria-label="Toggle menu">
               <span className={`dashboard-toggle-icon ${isMenuOpen ? 'open' : ''}`}></span>
               <span className={`dashboard-toggle-icon ${isMenuOpen ? 'open' : ''}`}></span>
@@ -37,28 +35,33 @@ function Dashboard() {
           </div>
           <nav className="dashboard-nav">
             <Link
-              to="/apps"
-              className={`dashboard-nav-link ${location.pathname === '/apps' ? 'active' : ''}`}
+              to="/admin/dashboard"
+              className={`dashboard-nav-link ${location.pathname === '/admin/dashboard' ? 'active' : ''}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <Link
-              to="/apps/profile"
-              className={`dashboard-nav-link ${location.pathname === '/apps/profile' ? 'active' : ''}`}
+              to="/admin/manage-users"
+              className={`dashboard-nav-link ${location.pathname === '/admin/manage-users' ? 'active' : ''}`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Profile
+              User Management
             </Link>
-            {(isWriter() || isAdmin()) && (
-              <Link
-                to="/apps/journal"
-                className={`dashboard-nav-link ${location.pathname === '/apps/journal' ? 'active' : ''}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Journal
-              </Link>
-            )}
+            <Link
+              to="/admin/manage-courses"
+              className={`dashboard-nav-link ${location.pathname === '/admin/manage-courses' ? 'active' : ''}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Manage Courses
+            </Link>
+            <Link
+              to="/admin/manage-journal"
+              className={`dashboard-nav-link ${location.pathname === '/admin/manage-journal' ? 'active' : ''}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Manage Journal
+            </Link>
             <button className="dashboard-nav-link logout" onClick={handleLogout}>
               Logout
             </button>
@@ -76,22 +79,18 @@ function Dashboard() {
           )}
           <div className="dashboard-header">
             <h1>Welcome, {user?.email}</h1>
-            <p>Access your tools and resources</p>
+            <p>Admin Dashboard</p>
           </div>
 
           <div className="dashboard-content">
-            {location.pathname === '/apps/profile' ? (
-              <Profile />
-            ) : location.pathname === '/apps/journal' && (isWriter() || isAdmin()) ? (
-              <ManageJournal />
-            ) : location.pathname === '/apps/admin/manage-users' && isAdmin() ? (
-              <ManageUsers />
-            ) : location.pathname === '/apps/admin/analytics' && isAdmin() ? (
-              <Analytics />
-            ) : location.pathname === '/apps/admin/manage-content' && isAdmin() ? (
-              <ManageContent />
+            {location.pathname === '/admin/manage-users' ? (
+              <AdminManageUsers />
+            ) : location.pathname === '/admin/manage-courses' ? (
+              <AdminManageCourses />
+            ) : location.pathname === '/admin/manage-journal' ? (
+              <AdminManageJournal />
             ) : (
-              <DashboardHome />
+              <AdminDashboardHome />
             )}
           </div>
         </main>
@@ -100,33 +99,37 @@ function Dashboard() {
   );
 }
 
-function DashboardHome() {
+function AdminDashboardHome() {
   const navigate = useNavigate();
-  const { isWriter, isAdmin } = useAuth();
 
   return (
     <div className="dashboard-home">
       <div className="dashboard-cards">
         <div 
-          className="dashboard-card user-card-profile"
-          onClick={() => navigate('/apps/profile')}
+          className="dashboard-card admin-card-users"
+          onClick={() => navigate('/admin/manage-users')}
         >
-          <h3>Profile</h3>
-          <p>Manage your account settings</p>
+          <h3>User Management</h3>
+          <p>Manage users, roles, and permissions</p>
         </div>
-        {(isWriter() || isAdmin()) && (
-          <div 
-            className="dashboard-card user-card-journal"
-            onClick={() => navigate('/apps/journal')}
-          >
-            <h3>Manage Journals</h3>
-            <p>Create and manage your journal posts</p>
-          </div>
-        )}
+        <div 
+          className="dashboard-card admin-card-courses"
+          onClick={() => navigate('/admin/manage-courses')}
+        >
+          <h3>Manage Courses</h3>
+          <p>Create, edit, and delete courses</p>
+        </div>
+        <div 
+          className="dashboard-card admin-card-journal"
+          onClick={() => navigate('/admin/manage-journal')}
+        >
+          <h3>Manage Journal</h3>
+          <p>Manage blog posts and journal entries</p>
+        </div>
       </div>
     </div>
   );
 }
 
-export default Dashboard;
+export default AdminDashboard;
 

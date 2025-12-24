@@ -234,6 +234,150 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Override transform for admin cards */
+.admin-card-users:hover,
+.admin-card-courses:hover,
+.admin-card-journal:hover {
+  transform: none;
+}
+
+/* Admin Dashboard Colored Cards */
+.admin-card-users {
+  background-color: #f9f9f9;
+  color: #1a1a1a;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+}
+
+.admin-card-users h3 {
+  color: #1a1a1a;
+}
+
+.admin-card-users p {
+  color: #666;
+}
+
+.admin-card-users:hover {
+  background-color: #4A00C8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card-users:hover h3,
+.admin-card-users:hover p {
+  color: #ffffff;
+}
+
+.admin-card-courses {
+  background-color: #f9f9f9;
+  color: #1a1a1a;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+}
+
+.admin-card-courses h3 {
+  color: #1a1a1a;
+}
+
+.admin-card-courses p {
+  color: #666;
+}
+
+.admin-card-courses:hover {
+  background-color: #4A00C8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card-courses:hover h3,
+.admin-card-courses:hover p {
+  color: #ffffff;
+}
+
+.admin-card-journal {
+  background-color: #f9f9f9;
+  color: #1a1a1a;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+}
+
+.admin-card-journal h3 {
+  color: #1a1a1a;
+}
+
+.admin-card-journal p {
+  color: #666;
+}
+
+.admin-card-journal:hover {
+  background-color: #4A00C8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card-journal:hover h3,
+.admin-card-journal:hover p {
+  color: #ffffff;
+}
+
+/* User Dashboard Colored Cards */
+.user-card-profile {
+  background-color: #f9f9f9;
+  color: #1a1a1a;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+}
+
+.user-card-profile h3 {
+  color: #1a1a1a;
+}
+
+.user-card-profile p {
+  color: #666;
+}
+
+.user-card-profile:hover {
+  background-color: #4A00C8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-card-profile:hover h3,
+.user-card-profile:hover p {
+  color: #ffffff;
+}
+
+.user-card-journal {
+  background-color: #f9f9f9;
+  color: #1a1a1a;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+}
+
+.user-card-journal h3 {
+  color: #1a1a1a;
+}
+
+.user-card-journal p {
+  color: #666;
+}
+
+.user-card-journal:hover {
+  background-color: #4A00C8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-card-journal:hover h3,
+.user-card-journal:hover p {
+  color: #ffffff;
+}
+
+.user-card-profile:hover,
+.user-card-journal:hover {
+  transform: none;
+}
+
 .dashboard-card h3 {
   font-size: 1.5rem;
   color: #1a1a1a;

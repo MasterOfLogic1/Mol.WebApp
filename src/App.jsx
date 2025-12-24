@@ -19,7 +19,8 @@ import Verification from './pages/Verification';
 import ResetPassword from './pages/ResetPassword';
 import NewsletterVerify from './pages/NewsletterVerify';
 import Dashboard from './pages/Dashboard';
-import Admin from './pages/Admin';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 import './App.css';
 
@@ -43,11 +44,11 @@ function AdminRoute({ children }) {
   }
 
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   if (!isAdmin()) {
-    return <Navigate to="/apps" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   return children;
@@ -56,9 +57,9 @@ function AdminRoute({ children }) {
 function AppRoutes() {
   const location = useLocation();
   const pathname = location.pathname;
-  const authRoutes = ['/register', '/login', '/reset-password'];
+  const authRoutes = ['/register', '/login', '/reset-password', '/admin/login'];
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/register/verification/');
-  const isDashboardRoute = pathname.startsWith('/apps');
+  const isDashboardRoute = pathname.startsWith('/apps') || pathname.startsWith('/admin');
 
   return (
     <div className="App">
@@ -80,6 +81,23 @@ function AppRoutes() {
         <Route path="/register/verification/:token" element={<Verification />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Navigate to="/admin/dashboard" replace />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/*"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
         <Route
           path="/apps/*"
           element={
