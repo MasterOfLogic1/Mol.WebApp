@@ -41,6 +41,12 @@ function JournalPost() {
     });
   };
 
+  const getFirstName = (fullName) => {
+    if (!fullName) return 'this user';
+    const nameParts = fullName.trim().split(/\s+/);
+    return nameParts[0] || 'this user';
+  };
+
   // Check if body is TipTap JSON format
   const isTipTapJSON = (body) => {
     if (!body) return false;
@@ -184,8 +190,11 @@ function JournalPost() {
     return (
       <div className="blog-post">
         <div className="blog-post-container">
-          <button onClick={() => navigate('/journals')} className="back-btn">
-            ← Back to Journals
+          <button onClick={() => navigate('/journals')} className="back-btn" title="Back to Journals">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5"></path>
+              <path d="M12 19l-7-7 7-7"></path>
+            </svg>
           </button>
           <div className="blog-post-error">
             <h1>Post Not Found</h1>
@@ -200,8 +209,11 @@ function JournalPost() {
   return (
     <div className="blog-post">
       <div className="blog-post-container">
-        <button onClick={() => navigate('/journals')} className="back-btn">
-          ← Back to Journals
+        <button onClick={() => navigate('/journals')} className="back-btn" title="Back to Journals">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ stroke: '#000000' }}>
+            <path d="M19 12H5" stroke="#000000"></path>
+            <path d="M12 19l-7-7 7-7" stroke="#000000"></path>
+          </svg>
         </button>
         
         <article className="blog-post-content">
@@ -251,7 +263,7 @@ function JournalPost() {
                 onClick={() => navigate(`/journals/user/${post.creator_username}`)}
                 className="view-more-articles-btn"
               >
-                View more articles from this user →
+                View more articles from {getFirstName(post.creator_fullname)} →
               </button>
             </div>
           )}
