@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import htmlToMd from 'html-to-md';
+import JournalEditor from '../components/JournalEditor';
 import { marked } from 'marked';
 import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from '../api/blogsApi';
 import { getCourses, createCourse, updateCourse, deleteCourse } from '../api/courseApi';
@@ -20,7 +18,7 @@ function ManageContent() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    body: '',
+    body: null,
     tag_names: [],
     thumbnail: null,
   });
@@ -155,48 +153,13 @@ function ManageContent() {
     }
 
     try {
-      // Convert HTML (from WYSIWYG editor) to Markdown before saving
-      let htmlBody = formData.body || '';
+      // Save TipTap JSON format (same as ManageJournal)
+      const payload = { ...formData, body: JSON.stringify(formData.body) };
       
-      // Extract images from HTML and convert them to markdown
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = htmlBody;
-      const images = Array.from(tempDiv.querySelectorAll('img'));
-      
-      // Replace each img tag with markdown image syntax
-      images.forEach((img) => {
-        const src = img.getAttribute('src') || '';
-        const alt = img.getAttribute('alt') || '';
-        if (src) {
-          // Create markdown image syntax
-          const markdownImage = `![${alt}](${src})`;
-          // Create a paragraph element with the markdown text
-          const p = document.createElement('p');
-          p.textContent = markdownImage;
-          // Replace img with the paragraph
-          img.parentNode.replaceChild(p, img);
-        } else {
-          // Remove images without src
-          img.remove();
-        }
-      });
-      
-      // Convert HTML to markdown
-      let markdownBody = htmlToMd(tempDiv.innerHTML);
-      
-      // Clean up: html-to-md might add extra formatting, so ensure images are correct
-      // Replace any escaped or modified image syntax back to proper markdown
-      markdownBody = markdownBody.replace(/!\\?\[([^\]]*)\]\\?\(([^)]+)\)/g, '![$1]($2)');
-      
-      const formDataWithMarkdown = {
-        ...formData,
-        body: markdownBody
-      };
-
       if (editingPost) {
-        await updateBlogPost(editingPost.id, formDataWithMarkdown);
+        await updateBlogPost(editingPost.id, payload);
       } else {
-        await createBlogPost(formDataWithMarkdown);
+        await createBlogPost(payload);
       }
       setShowForm(false);
       setEditingPost(null);
@@ -208,35 +171,53 @@ function ManageContent() {
   };
 
   const handleEdit = (post) => {
-    setEditingPost(post);
-    // Convert Markdown to HTML for WYSIWYG editor
-    let htmlBody = post.body || '';
-    
-    // First, convert markdown images to HTML img tags before using marked.parse
-    // This ensures base64 images are properly handled
-    if (htmlBody) {
-      // Match markdown image syntax: ![alt](url)
-      const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
-      htmlBody = htmlBody.replace(imageRegex, (match, alt, src) => {
-        // Escape alt text for HTML
-        const escapedAlt = alt.replace(/"/g, '&quot;');
-        // Return HTML img tag
-        return `<img src="${src}" alt="${escapedAlt}" />`;
-      });
+    try {
+      setEditingPost(post);
       
-      // Now parse the rest of the markdown (headers, lists, etc.)
-      htmlBody = marked.parse(htmlBody);
+      // Handle body format - could be JSON string, markdown, or HTML
+      let bodyContent = null;
+      if (post.body) {
+        try {
+          // Try parsing as JSON first (TipTap format)
+          const parsed = typeof post.body === 'string' ? JSON.parse(post.body) : post.body;
+          // Check if it's a valid TipTap JSON structure
+          if (parsed && typeof parsed === 'object' && (parsed.type === 'doc' || parsed.content)) {
+            bodyContent = parsed;
+          } else {
+            // Not valid TipTap JSON, treat as markdown
+            throw new Error('Not TipTap JSON');
+          }
+        } catch {
+          // If not JSON, treat as markdown and convert to HTML
+          // TipTap can accept HTML directly
+          let htmlBody = typeof post.body === 'string' ? post.body : String(post.body);
+          
+          // Convert markdown images to HTML img tags first
+          const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+          htmlBody = htmlBody.replace(imageRegex, (match, alt, src) => {
+            const escapedAlt = alt.replace(/"/g, '&quot;');
+            return `<img src="${src}" alt="${escapedAlt}" />`;
+          });
+          
+          // Parse markdown to HTML
+          htmlBody = marked.parse(htmlBody);
+          bodyContent = htmlBody;
+        }
+      }
+      
+      setFormData({
+        title: post.title || '',
+        description: post.description || '',
+        body: bodyContent,
+        tag_names: post.tag_names || [],
+        thumbnail: null,
+      });
+      setThumbnailPreview(post.thumbnail_url || null);
+      setShowForm(true);
+    } catch (err) {
+      console.error('Error in handleEdit:', err);
+      setError(`Failed to load post for editing: ${err.message}`);
     }
-    
-    setFormData({
-      title: post.title || '',
-      description: post.description || '',
-      body: htmlBody,
-      tag_names: post.tag_names || [],
-      thumbnail: null,
-    });
-    setThumbnailPreview(post.thumbnail_url || null);
-    setShowForm(true);
   };
 
   const handleDelete = async (postId) => {
@@ -256,7 +237,7 @@ function ManageContent() {
     setFormData({
       title: '',
       description: '',
-      body: '',
+      body: null,
       tag_names: [],
       thumbnail: null,
     });
@@ -549,34 +530,10 @@ function ManageContent() {
 
             <div className="form-group">
               <label htmlFor="body">Body *</label>
-              <ReactQuill
-                theme="snow"
+              <JournalEditor
                 value={formData.body}
-                onChange={(value) => setFormData(prev => ({ ...prev, body: value }))}
-                modules={{
-                  toolbar: [
-                    [{ 'header': [1, 2, 3, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'color': [] }, { 'background': [] }],
-                    ['blockquote', 'code-block'],
-                    ['link', 'image'],
-                    ['clean']
-                  ],
-                }}
-                formats={[
-                  'header',
-                  'bold', 'italic', 'underline', 'strike',
-                  'list', 'bullet',
-                  'color', 'background',
-                  'blockquote', 'code-block',
-                  'link', 'image'
-                ]}
-                placeholder="Write your blog post content here... (Type normally like in Microsoft Word - markdown is handled automatically!)"
+                onChange={(json) => setFormData(prev => ({ ...prev, body: json }))}
               />
-              <div className="markdown-hint">
-                <small>💡 Tip: Type normally like in Microsoft Word! You can also paste ChatGPT responses - they'll be converted automatically. Content is stored as markdown behind the scenes.</small>
-              </div>
             </div>
 
             <div className="form-group">
