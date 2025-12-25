@@ -25,6 +25,7 @@ function ManageJournal() {
     tag_names: [],
     thumbnail: null
   });
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
 
   useEffect(() => {
     if (user?.username) fetchPosts();
@@ -101,6 +102,7 @@ function ManageJournal() {
         tag_names: post.tag_names || [],
         thumbnail: null
       });
+      setThumbnailPreview(post.thumbnail_url || null);
       setShowForm(true);
     } catch (err) {
       console.error('Error in handleEdit:', err);
@@ -116,6 +118,7 @@ function ManageJournal() {
 
   const resetForm = () => {
     setFormData({ title: "", description: "", body: null, tag_names: [], thumbnail: null });
+    setThumbnailPreview(null);
     setEditingPost(null);
     setShowForm(false);
   };
@@ -159,6 +162,44 @@ function ManageJournal() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="thumbnail">Thumbnail Image</label>
+              <input
+                type="file"
+                id="thumbnail"
+                name="thumbnail"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setFormData(prev => ({ ...prev, thumbnail: file }));
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setThumbnailPreview(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+              {thumbnailPreview && (
+                <div className="thumbnail-preview">
+                  <img src={thumbnailPreview} alt="Thumbnail preview" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({ ...prev, thumbnail: null }));
+                      setThumbnailPreview(null);
+                      const fileInput = document.getElementById('thumbnail');
+                      if (fileInput) fileInput.value = '';
+                    }}
+                    className="thumbnail-remove-btn"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="form-group">
